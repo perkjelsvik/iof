@@ -5,4 +5,6 @@ This repository is the result of my final year as a master student. The developm
 
 The code for back-end in this repository should be fully working and ready to go. Front-end however is only included as documentation, since the Dash apps written are custom-made for the case study of the thesis. There are also several functions for both parts that could not be included. 
 
+Regarding documentation files in the form of html / pdf / readthedocs. Documentation was generated with sphinx, but it was done so at a stage where it included several parts that could not be included. It was also in a rough state. New documentation will be added at a later date. 
+
 This is a bare bones version of the repository and the code. Both will be updated in the future, but first there is a vacation to take care of :-)
