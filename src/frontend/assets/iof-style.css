@@ -1,0 +1,146 @@
+#iofp-page-content {
+    background-color: #E8F0F9 !important;
+    color: #5B5B5B !important;
+}
+
+#iofp-page-content ::-webkit-scrollbar {
+    background-color: #E8F0F9 !important;
+}
+#iofp-page-content ::-webkit-scrollbar-thumb {
+    background-color: #56B5FF !important;
+}
+
+#iofp-page-content::-webkit-scrollbar {
+    display: none;
+}
+
+
+#iof-control-tabs {
+    width: 400px;
+    height: 700px;
+    margin: 50px;
+    margin-right: 0px;
+    background-color: #fff;
+    font-size: 10pt;
+    float: left;
+}
+
+#iof-control-tabs .tab-content {
+    padding: 20px;
+}
+
+.iof-tab {
+    max-height: 565px;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+#iof-control-tabs .tab--selected {
+    border-top: solid 2px #56B5FF !important;
+    color: #56B5FF !important;
+}
+
+#iofp-graph{
+    height: 700px;
+    width: 100%;
+}
+#iofp-graph-div {
+    height: 700px;
+    width: calc(100vw - 600px);
+    margin: 50px;
+    display: inline-block !important;
+}
+
+#iofp-graph-div .hidden {
+    display: none !important;
+}
+
+#tag-graph{
+    height: 700px;
+    width: 100%;
+}
+#tag-graph-div {
+    height: 700px;
+    width: calc(100vw - 600px);
+    margin: 50px;
+    display: inline-block;
+}
+
+#tbr-graph{
+    height: 700px;
+    width: 100%;
+}
+
+#tbr-graph-div {
+    height: 700px;
+    width: calc(100vw - 600px);
+    margin: 50px;
+    display: inline-block;
+}
+
+td.CalendarDay {
+  padding: 0;
+}
+
+#pos-graph{
+    height: 700px;
+    width: 100%;
+}
+
+#pos-graph-div {
+    height: 700px;
+    width: calc(100vw - 600px);
+    margin: 50px;
+    display: inline-block;
+}
+
+#tag-live-graph{
+    height: 700px;
+    width: 100%;
+}
+
+#tag-live-graph-div {
+    height: 700px;
+    width: calc(100vw - 600px);
+    margin: 50px;
+    display: inline-block;
+}
+
+#iofp-page-content .app-controls-name {
+    width: 100px !important;
+}
+#iofp-page-content .rc-slider-track {
+    background-color: #56B5FF !important;
+}
+#iofp-page-content .rc-slider-handle, #iofp-page-content .rc-slider-dot-active {
+    border-color: #56B5FF !important;;
+}
+
+/* SNR slider */
+#iofp-page-content .rc-slider {
+    width: 225px !important;
+    float: right;
+    display: inline-block;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+
+/*
+#iofp-page-content .rc-slider {
+    width: 225px !important;
+    margin-top: 4px;
+}
+*/
+
+/*
+#tag-id-dropdown {
+    width: 150px;
+    float: right;
+}
+*/
+
+#data-selection-dropdown {
+    width: 150px;
+    float: right;
+}
