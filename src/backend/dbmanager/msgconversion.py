@@ -17,6 +17,8 @@ DbFormat = Dict[str, List[DatafieldName]]
 dbFormats: DbFormat = {
     "gps": [
         "timestamp",
+        "date",
+        "hour",
         "tbr_serial_id",
         "SLIM_status",
         "longitude",
@@ -28,6 +30,8 @@ dbFormats: DbFormat = {
     ],
     "tbr": [
         "timestamp",
+        "date",
+        "hour",
         "tbr_serial_id",
         "temperature",
         "temperature_data_raw",
@@ -38,6 +42,8 @@ dbFormats: DbFormat = {
     ],
     "tag": [
         "timestamp",
+        "date",
+        "hour",
         "tbr_serial_id",
         "comm_protocol",
         "frequency",

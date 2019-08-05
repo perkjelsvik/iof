@@ -58,6 +58,8 @@ def sql_query_gps_create_table_dummy() -> TableDummySQL:
         CREATE TABLE IF NOT EXISTS gps (
             message_id INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            hour INTEGER NOT NULL,
             tbr_serial_id INTEGER NOT NULL,
             slim_status TEXT NOT NULL,
             latitude DECIMAL(7,5),
@@ -65,14 +67,14 @@ def sql_query_gps_create_table_dummy() -> TableDummySQL:
             pdop FLOAT NOT NULL,
             fix TEXT NOT NULL,
             num_sat_tracked INTEGER NOT NULL
-        );"""
+        );"""  # 11 columns
     table = "gps"
     columns = (
-        "(message_id, timestamp, tbr_serial_id, "
+        "(message_id, timestamp, date, hour, tbr_serial_id, "
         "slim_status, latitude, longitude, pdop, fix, num_sat_tracked)"
     )
-    dummy_data = (-1, -1, -1, -1, -1, -1, -1, -1, -1)
-    numOfValues = len(dummy_data)
+    numOfValues = 11
+    dummy_data = (-1,) * numOfValues
     valuesString = _sql_values_string(numOfValues)
     dummy_query = f"INSERT INTO {table} {columns} VALUES {valuesString};"
     return (query, dummy_query, dummy_data)
@@ -91,6 +93,8 @@ def sql_query_tag_create_table_dummy() -> TableDummySQL:
         CREATE TABLE IF NOT EXISTS tag (
             message_id INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            hour INTEGER NOT NULL,
             tbr_serial_id INTEGER NOT NULL,
             comm_protocol TEXT NOT NULL,
             frequency INTEGER NOT NULL,
@@ -99,12 +103,12 @@ def sql_query_tag_create_table_dummy() -> TableDummySQL:
             tag_data_raw INTEGER,
             snr INTEGER NOT NULL,
             millisecond INTEGER NOT NULL
-        );"""
-    dummy_data = (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
-    numOfValues = len(dummy_data)
+        );"""  # 12 columns
+    numOfValues = 12
+    dummy_data = (-1,) * numOfValues
     table = "tag"
     columns = (
-        "(message_id, timestamp, tbr_serial_id, "
+        "(message_id, timestamp, date, hour, tbr_serial_id, "
         "comm_protocol, frequency, tag_id, tag_data, tag_data_raw, snr, millisecond)"
     )
     valuesString = _sql_values_string(numOfValues)
@@ -129,6 +133,8 @@ def sql_query_tbr_create_table_dummy() -> TableDummySQL:
         CREATE TABLE IF NOT EXISTS tbr (
             message_id INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            hour INTEGER NOT NULL,
             tbr_serial_id INTEGER NOT NULL,
             temperature DECIMAL(3,1),
             temperature_data_raw INTEGER NOT NULL,
@@ -137,10 +143,10 @@ def sql_query_tbr_create_table_dummy() -> TableDummySQL:
             frequency INTEGER NOT NULL
         );"""
     table = "tbr"
-    dummy_data = (-1, -1, -1, -1, -1, -1, -1, -1)
-    numOfValues = len(dummy_data)
+    numOfValues = 10
+    dummy_data = (-1,) * 10
     columns = (
-        "(message_id, timestamp, tbr_serial_id, "
+        "(message_id, timestamp, date, hour, tbr_serial_id, "
         "temperature, temperature_data_raw, noise_avg, noise_peak, frequency)"
     )
     valuesString = _sql_values_string(numOfValues)
@@ -176,6 +182,8 @@ def sql_query_positions_create_table() -> TableQuerySQL:
     query = """
         CREATE TABLE IF NOT EXISTS positions (
             timestamp INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            hour INTEGER NOT NULL,
             tag_id INTEGER NOT NULL,
             frequency INTEGER NOT NULL,
             cage_name TEXT NOT NULL,
@@ -213,11 +221,11 @@ def sql_query_insert_packet(
 
 
 def sql_query_insert_position() -> TableInsertSQL:
-    numOfValues = 10
     columns = """
-        (timestamp, tag_id, frequency, cage_name, millisecond,
-        x, y, z, latitude, longitude)"""
+        (timestamp, date, hour, tag_id, frequency, cage_name, millisecond,
+        x, y, z, latitude, longitude)"""  # 12 columns
     table = "positions"
+    numOfValues = 12
     valuesString = _sql_values_string(numOfValues)
     sql_query = f"INSERT INTO {table} {columns} VALUES {valuesString};"
     return sql_query

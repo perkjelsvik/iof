@@ -40,7 +40,7 @@ def init_databasemanager():
         dbDict = toml.load(_dbConfig)
     except FileNotFoundError as e:
         logger.warning(f"{e} | Did not find toml config file with db_names")
-    except toml.TomlDecodeError as e:
+    except toml.decoder.TomlDecodeError as e:
         logger.exception(f"{e} | db_names toml file wrongly formatted")
     else:
         _dbPath = _db + dbDict["main_database"]

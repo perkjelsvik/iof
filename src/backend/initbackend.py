@@ -25,7 +25,7 @@ def _ask_yes_no(prompt: str) -> bool:
     answer = input(prompt).lower()
     while answer not in ("y", "n", "yes", "no"):
         answer = input("Please enter 'y' or 'n': ").lower()
-    if answer == "y" or "yes":
+    if answer == "y" or answer == "yes":
         return True
     else:
         return False
@@ -67,7 +67,7 @@ def define_mqtt_config(client: bool = False) -> None:
                 config["usr_pwd"]["user"],
                 "******",
             )
-        except toml.TomlDecodeError as e:
+        except toml.decoder.TomlDecodeError as e:
             if client:
                 client_logger.exception(f"{e} | Error loading mqtt config file")
             else:
@@ -116,6 +116,13 @@ def reset_iof() -> None:
                 except NotImplementedError as e:
                     logger.exception(
                         f"{e} | caught error deleting 'metadata_conversion.toml'"
+                    )
+            if Path("src/backend/.config/metadata_positioning.toml").exists():
+                try:
+                    os.remove("src/backend/.config/metadata_positioning.toml")
+                except NotImplementedError as e:
+                    logger.exception(
+                        f"{e} | caught error deleting 'metadata_positioning.toml'"
                     )
     wantsToChange = _ask_yes_no("Do you wish to change mqtt configuration? [y/n]: ")
     if wantsToChange:

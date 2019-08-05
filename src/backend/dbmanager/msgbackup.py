@@ -30,7 +30,7 @@ def init_msgbackup():
         dbDict = toml.load(dbConfig)
     except FileNotFoundError as e:
         logger.warning(f"{e} | Did not find toml config file with db_names")
-    except toml.TomlDecodeError as e:
+    except toml.decoder.TomlDecodeError as e:
         logger.exception(f"{e} | db_names toml file wrongly formatted")
     else:
         db = dbPath + dbDict["backup_database"]

@@ -6,7 +6,7 @@ import toml
 import logging
 import logging.handlers
 from pathlib import Path
-from typing import NoReturn, Tuple, Mapping, Union, Optional
+from typing import List, Mapping, NoReturn, Optional, Tuple, Union
 
 # Third-party modules and packages
 from paho.mqtt import client as mqtt
@@ -73,7 +73,7 @@ def mqtt_client_config() -> MQTTConfig:
             config["usr_pwd"]["user"],
             config["usr_pwd"]["pwd"],
         )
-    except toml.TOMLDecodeError as e:
+    except toml.decoder.TomlDecodeError as e:
         logger.warning("MQTT Config file not formatted correctly! Exiting program")
         logger.error(e)
         exit()
@@ -91,9 +91,35 @@ def unpack_json_payload(payload: MQTTPayload) -> Optional[DecodedMQTTMessage]:
         return decode
 
 
+def load_iof_mqtt_topics() -> List[Tuple[str, int]]:
+    if not Path("src/backend/.config/topics.toml").exists():
+        logging.warning(
+            "no 'src/backend/.config/topics.toml' (mqtt topics) defined! "
+            "Restart client with topics.toml configured and placed correctly. "
+            "If you wish to subscribe to wildcard '#', add it as a topic "
+            "in the file. Exiting program."
+        )
+        exit()
+    try:
+        topDict = toml.load("src/backend/.config/topics.toml")
+        logger.info(
+            f"Subscribing to topics: {topDict['top']} with qos: {topDict['qos']}"
+        )
+        topics = list(zip(topDict["top"], topDict["qos"]))
+    except toml.decoder.TomlDecodeError as e:
+        logger.warning("MQTT topics file not formatted correctly! Exiting program")
+        logger.error(e)
+        exit()
+    else:
+        return topics
+
+
 def on_connect(mqttc, obj, flags, rc) -> None:
     logger.info(f"Connection returned result: {mqtt.connack_string(rc)}")
-    mqttc.subscribe("#", qos=1)  # subscribe to # topic
+    logger.info("Reading MQTT project topic names from file")
+    topics = load_iof_mqtt_topics()
+    mqttc.subscribe(topics)  # topics defined as list of tuples containing name and qos
+    # mqttc.subscribe("#", qos=1)  # subscribe to # topic
     # mqttc.subscribe("$SYS/#")  # Subscribe to broker $SYS messages
 
 
@@ -103,72 +129,75 @@ def on_disconnect(mqttc, obj, rc) -> None:
 
 
 def on_message(mqttc, obj, msg) -> None:
+    # Accepts all topics except $SYS topics for message handling
+    if msg.topic.startswith("$SYS") is True:
+        return
+
     msgID = None
     now = time.strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f"[{now}] Received new message! ")
     logger.info(f"topic: {msg.topic} | QoS: {msg.qos} ")
     logger.info(f"| payload: {msg.payload}\n")
 
-    # Accepts all topics except $SYS topics for message handling
-    if msg.topic.startswith("$SYS") is not True:
-        while True:
-            # Unpack data from json, and get data content of message
-            try:
-                decode = json.loads(msg.payload)
-                data = base64.b64decode(decode["data"])
-            except json.JSONDecodeError:
-                logger.error(f"Failed json unpacking of MQTT payload: {msg.payload}")
-                break
-            except KeyError:
-                logger.error(f"MQTT message formatted wrongly from sender: {decode}")
-                break
-            # Used for debugging
-            except Exception:
-                logger.exception(f"Unexpected error occured! {msg.payload}")
-                break
+    # iof client loop
+    while True:
+        # Unpack data from json, and get data content of message
+        try:
+            decode = json.loads(msg.payload)
+            data = base64.b64decode(decode["data"])
+        except json.JSONDecodeError:
+            logger.error(f"Failed json unpacking of MQTT payload: {msg.payload}")
+            break
+        except KeyError:
+            logger.error(f"MQTT message formatted wrongly from sender: {decode}")
+            break
+        # Used for debugging
+        except Exception:
+            logger.exception(f"Unexpected error occured! {msg.payload}")
+            break
 
-            # Unpack, organize, and convert message data
-            try:
-                message = msghandler.handle_message(data)
-            except ValueError as e:
-                logger.error(f"{e} | MQTT Message {msg.payload}")
-                break
-            # Used for debugging
-            except Exception:
-                logger.exception(f"Unexpected error! {msg.payload} | Data {data}")
-                break
+        # Unpack, organize, and convert message data
+        try:
+            message = msghandler.handle_message(data)
+        except ValueError as e:
+            logger.error(f"{e} | MQTT Message {msg.payload}")
+            break
+        # Used for debugging
+        except Exception:
+            logger.exception(f"Unexpected error! {msg.payload} | Data {data}")
+            break
 
-            # Insert message data in database
-            try:
-                msgID = dbmanager.insert_message_in_db(message)
-            except ValueError as e:
-                logger.error(f"{e}")
-                logger.error(f"| MQTT Message {msg.payload}")
-                logger.error(f"| header: {message.header}")
-                logger.error(f"| payload: {message.payload}")
-                break
-            # Used for debugging
-            except Exception as e:
-                logger.exception(f"{e}")
-                logger.error(f"| MQTT Message {msg.payload}")
-                logger.error(f"| header: {message.header}")
-                logger.error(f"| payload: {message.payload}")
-                break
+        # Insert message data in database
+        try:
+            msgID = dbmanager.insert_message_in_db(message)
+        except ValueError as e:
+            logger.error(f"{e}")
+            logger.error(f"| MQTT Message {msg.payload}")
+            logger.error(f"| header: {message.header}")
+            logger.error(f"| payload: {message.payload}")
+            break
+        # Used for debugging
+        except Exception as e:
+            logger.exception(f"{e}")
+            logger.error(f"| MQTT Message {msg.payload}")
+            logger.error(f"| header: {message.header}")
+            logger.error(f"| payload: {message.payload}")
+            break
 
-            # See if any positions can be found with the latest message
-            try:
-                dbmanager.position_and_insert_positions_from_msg(message)
-            # used for debugging
-            except Exception as e:
-                logger.exception(f"{e}")
-                logger.error(f"| MQTT Message {msg.payload}")
-                logger.error(f"| header: {message.header}")
-                logger.error(f"| payload: {message.payload}")
-            finally:
-                break
+        # See if any positions can be found with the latest message
+        try:
+            dbmanager.position_and_insert_positions_from_msg(message)
+        # used for debugging
+        except Exception as e:
+            logger.exception(f"{e}")
+            logger.error(f"| MQTT Message {msg.payload}")
+            logger.error(f"| header: {message.header}")
+            logger.error(f"| payload: {message.payload}")
+        finally:
+            break
 
-        # Insert message in backup database, retuns last rowID
-        msgbackup.store_message_to_backup_db(decode, msgID)
+    # Insert message in backup database, retuns last rowID
+    msgbackup.store_message_to_backup_db(decode, msgID)
 
     # Message handling finished
     now = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -180,7 +209,7 @@ def on_publish(mqttmessage_handlerc, obj, mid) -> None:
 
 
 def on_subscribe(mqttc, obj, mid, granted_qos) -> None:
-    logger.info(f"Subscribed: {mid} {granted_qos}")
+    logger.info(f"Subscribed | mid: {mid}, granted_qos: {granted_qos}")
     now = time.strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f"[{now}] waiting for new message...\n")
 
@@ -202,7 +231,7 @@ def main() -> NoReturn:
     mqttc.on_subscribe = on_subscribe
     mqttc.username_pw_set(username=user, password=pw)
     try:
-        mqttc.connect(address, port, keepalive=60)  # subscribes to '#' topic
+        mqttc.connect(address, port)
     except Exception:
         logger.exception("Error when connecting to mqtt broker! Shutting down")
         raise SystemExit

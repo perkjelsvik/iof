@@ -216,14 +216,10 @@ def check_if_reset_of_iof_wanted(dbName: str, dbBackupName: str) -> bool:
             it is recommended to overwrite these databases
             """
         )
-        ans = _ask_yes_no("Do you wish to delete them before continuing? [y/n]: ")
-        if ans:
-            return True
+        return _ask_yes_no("Do you wish to delete them before continuing? [y/n]: ")
     if (dbDict["main_database"] or dbDict["backup_database"]) and not ans:
         print(f"found other db-files in {dbConfig}")
-        ans = _ask_yes_no("Do you want to delete these first? [y/n]: ")
-        if ans == "y":
-            return True
+        return _ask_yes_no("Do you want to delete these first? [y/n]: ")
     return False
 
 

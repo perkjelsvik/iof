@@ -1,5 +1,6 @@
 # Python built-in modules and packages
 import logging
+import datetime as dt
 from typing import Union, Dict, Callable, Tuple, Optional
 
 # Third-party modules and packages
@@ -142,10 +143,24 @@ def _convert_comm_protocol_frequency(key: str, packet: Packet) -> int:
 def _convert_temperature(key: str, packet: Packet) -> float:
     """
     Temperature conversion formula from ThelmaBioTel documentation.
-    Converts temperature from 0-255 integer to 0.0 - 20.5 degrees celsius float.
+    Converts temperature from 0-255 integer to (-5.5, ..., 20.5) degrees celsius float.
     """
     temperature = (packet[key] - 50) / 10
     return temperature
+
+
+def _convert_timestamp_datetime(key: str, packet: Packet) -> int:
+    """
+    Convert UTX UNIC timestamp to 'YYYY-MM-DD HH:MM:SS' string. Timestamp is UTC time,
+    converted datetime string is local timezone time. Also extracts hour of timestamp 
+    to integer. Returns timestamp back to avoid changes in the timestamp datafield.
+    """
+    date_format = "%Y-%m-%d %H:%M:%S"
+    ts = packet[key]  # extract packet UTC timestamp
+    date = dt.datetime.fromtimestamp(ts).strftime(date_format)  # converts to local TZ
+    hour = int(dt.datetime.fromtimestamp(ts).strftime("%H"))  # extract hour too
+    packet.update({"date": date, "hour": hour})  # add date and hour to packet payload
+    return ts  # return ts to keep original value in packet
 
 
 # A dict mapping packet data to functions handling them
@@ -156,6 +171,7 @@ _conversion_functions: ConversionMapping = {
     "latitude": _convert_lat_long,
     "FIX": _convert_fix,
     "pdop": _convert_pdop,
+    "timestamp": _convert_timestamp_datetime,
     "commCode": _convert_comm_protocol_frequency,
     "tag_data": _convert_tag_data(_metaFlag),
     "tag_data_2": _convert_tag_data(_metaFlag),  # DS256 case
