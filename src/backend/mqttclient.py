@@ -29,6 +29,10 @@ InternetOfFishMessage = bytes
 logger = logging.getLogger("mqtt_client")
 logger.setLevel(logging.DEBUG)
 
+# Load boolean value to decide whether to position tag messages or not
+metaFileName: str = "src/backend/.config/metadata.toml"
+positionTags: bool = toml.load(metaFileName)["3D"]["include"]
+
 
 class CustomFormatter(logging.Formatter):
     """ Logging Formatter to have custom format for the different logging levels. """
@@ -186,7 +190,9 @@ def on_message(mqttc, obj, msg) -> None:
 
         # See if any positions can be found with the latest message
         try:
-            dbmanager.position_and_insert_positions_from_msg(message)
+            # Only look if 'include' set to True in metadata file
+            if positionTags:
+                dbmanager.position_and_insert_positions_from_msg(message)
         # used for debugging
         except Exception as e:
             logger.exception(f"{e}")
@@ -245,5 +251,5 @@ def main() -> NoReturn:
 if __name__ == "__main__":
     init_logging()
     msgbackup.init_msgbackup()
-    dbmanager.init_databasemanager()
+    dbmanager.init_databasemanager(positionTags)
     main()

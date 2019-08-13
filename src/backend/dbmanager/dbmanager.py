@@ -34,7 +34,7 @@ _dbPath = ""
 # _dbPath = "databases/iof.db"
 
 
-def init_databasemanager():
+def init_databasemanager(positionTags: bool):
     global _dbPath
     try:
         dbDict = toml.load(_dbConfig)
@@ -51,7 +51,11 @@ def init_databasemanager():
         sqlite3.register_adapter(np.uint32, lambda val: int(val))
         sqlite3.register_adapter(np.uint16, lambda val: int(val))
         sqlite3.register_adapter(np.uint8, lambda val: int(val))
-        pos.init_metadata()
+        if positionTags:
+            logger.info(
+                "Including positioning due to '3D: include' set True in metadata"
+            )
+            pos.init_metadata()
 
 
 class DatabaseManager:

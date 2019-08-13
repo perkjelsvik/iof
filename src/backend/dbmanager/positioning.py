@@ -103,7 +103,9 @@ def init_metadata(old=False) -> Optional[Tuple[CageMetaDict, List[TagsMeta]]]:
     try:
         # metaDict: MetaDict = toml.load("../.config/bench_position.toml")
         # metaDict: MetaDict = toml.load("../.config/metadata_positioning.toml")
-        metaDict: MetaDict = toml.load("src/backend/.config/metadata_positioning.toml")
+        metaDict: MetaDict = toml.load("src/backend/.config/metadata_positioning.toml")[
+            "3D"
+        ]
     except FileNotFoundError:
         logger.error(
             "NB! No metadata position config file found. Can't do positioning."
@@ -114,38 +116,25 @@ def init_metadata(old=False) -> Optional[Tuple[CageMetaDict, List[TagsMeta]]]:
         return None
     else:
         cages, depth_tags = {}, []
-        for cage_key in metaDict["cages"]:
+        for cage_key in metaDict["active_cages"]:
             cageGeo = None
-            cageName = cage_key
-            tbrList = metaDict["cages"][cage_key]["tbr"]
-            if old:
-                depth = metaDict["cages"][cage_key]["depth_old"]
-            else:
-                depth = metaDict["cages"][cage_key]["depth"]
+            cageName = metaDict["cages"][cage_key]["name"]
+            tbrList = metaDict["cages"][cage_key]["tbr"]["tbrs"]
+            depth = metaDict["cages"][cage_key]["tbr"]["depth"]
             if "geometry" in metaDict["cages"][cage_key]:
                 geo = metaDict["cages"][cage_key]["geometry"]
+                latlong = metaDict["cages"][cage_key]["latlong"]
                 center = Point(geo["centerX"], geo["centerY"])
                 circle = CageCircle(center, geo["radius"])
-                if old:
-                    cageGeo = CageGeometry(
-                        circle=circle,
-                        lat_A=geo["lat_A_old"],
-                        lat_B=geo["lat_B_old"],
-                        lat_C=geo["lat_C_old"],
-                        lon_A=geo["lon_A_old"],
-                        lon_B=geo["lon_B_old"],
-                        lon_C=geo["lon_C_old"],
-                    )
-                else:
-                    cageGeo = CageGeometry(
-                        circle=circle,
-                        lat_A=geo["lat_A"],
-                        lat_B=geo["lat_B"],
-                        lat_C=geo["lat_C"],
-                        lon_A=geo["lon_A"],
-                        lon_B=geo["lon_B"],
-                        lon_C=geo["lon_C"],
-                    )
+                cageGeo = CageGeometry(
+                    circle=circle,
+                    lat_A=latlong["lat_A_old"],
+                    lat_B=latlong["lat_B_old"],
+                    lat_C=latlong["lat_C_old"],
+                    lon_A=latlong["lon_A_old"],
+                    lon_B=latlong["lon_B_old"],
+                    lon_C=latlong["lon_C_old"],
+                )
             cages.update({cageName: CageMeta(cageName, tbrList, depth, cageGeo)})
         for tag_key in metaDict["tags"]:
             tag_id = metaDict["tags"][tag_key]["tag_id"]

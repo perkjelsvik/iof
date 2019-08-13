@@ -10,6 +10,7 @@ import toml
 
 # Local modules and packages
 from src.backend.dbmanager import dbinit
+from src.backend import initmetafile
 
 
 # --- Useful type hints ---
@@ -139,6 +140,27 @@ def iof_ready() -> bool:
     return dbinit.databases_ready()
 
 
+def init_metadata():
+    metaExists = Path("src/backend/.config/metadata.toml").exists()
+    if metaExists:
+        convertExcel = _ask_yes_no(
+            "A metadata.toml file already exists. Do you wish to overwrite "
+            "it by converting metadata from an excel (xlsx) file?"
+        )
+    else:
+        convertExcel = _ask_yes_no(
+            "No project metadata file exists "
+            "(needed for data type conversion, positioning and front-end etc.). "
+            "Do you wish to convert metadata from an excel (xlsx) file?"
+        )
+    if convertExcel:
+        logger.info("Converting excel metadata to project metadata.")
+        initmetafile.excel_meta_to_toml()
+        initmetafile.excel_mqtt_topics_to_toml()
+    else:
+        logger.info("Not converting excel metadata to project metadata.")
+
+
 def init_iof(args: List[str]) -> None:
     """
     inits databases. If args contain --metadata it will also load in metadata
@@ -160,6 +182,7 @@ def init_iof(args: List[str]) -> None:
     resetWanted = dbinit.check_if_reset_of_iof_wanted(dbName, dbBackupName)
     if resetWanted:
         reset_iof()
+    init_metadata()
     dbinit.init_databases(dbName, dbBackupName)
     if not Path("src/backend/.config/config.toml").exists():
         define_mqtt_config()

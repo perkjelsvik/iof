@@ -1,9 +1,13 @@
 import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
+import toml
 
 from dataclasses import dataclass, field
 from typing import List
+
+metafile = "frontend_metadata.toml"
+meta = toml.load(metafile)["3D"]["cages"]
 
 
 @dataclass
@@ -39,7 +43,7 @@ class Cage:
 
     def _tbrs(self):
         A, B, C = self.tbr_serial_id
-        z = -self.tbrDepth
+        z = self.tbrDepth
         self.tbr = pd.DataFrame(
             {
                 "TBR": [A, B, C, A],
@@ -61,7 +65,7 @@ class Cage:
                     {
                         "x": [x[i], x[i], self.center.x],
                         "y": [y[i], y[i], self.center.y],
-                        "z": [-z0, -z1, -z2],
+                        "z": [z0, z1, z2],
                     }
                 )
             )
@@ -72,7 +76,7 @@ class Cage:
         x = self.r * np.cos(theta) + self.center.x
         y = self.r * np.sin(theta) + self.center.y
         for depth in self.circlesDepths:
-            self.circles.append(pd.DataFrame({"x": x, "y": y, "z": -depth}))
+            self.circles.append(pd.DataFrame({"x": x, "y": y, "z": depth}))
 
     def _traces(self):
         # TBR triangle
@@ -110,7 +114,7 @@ class Cage:
                 line=dict(color="rgba(0,0,0,0.1)", width=10),
                 hoverinfo="skip",
                 legendgroup=f"{self.name} Cage",
-                name=f"z={-d}",
+                name=f"z={d}",
             )
             for circle, d in zip(self.circles, self.circlesDepths)
         ]
@@ -131,69 +135,28 @@ class Cage:
         self.traces += tbrs + circles + lines
 
 
-# AQUATRAZ
-# Meta data not needed, but stored for reference:
-# | AB = 42.39 | AC = 39.92 | BC = 44.75 | r_tbr = 24.533016018
-aq_center = Point(21.14, 12.45)
-aq_r = 26.579
-aq_b, aq_cx, aq_cy = 42.391825746953415, 16.366497453560264, 36.406204121068214
-aq_tbr = [730, 735, 837]
-aq_tbr_depth = 3
-aq_lines_depth = [0, 18, 32]
-aq_circles_depths = [0, 8, 18]
-aq_name = "Aquatraz"
-aq_cage = Cage(
-    center=aq_center,
-    r=aq_r,
-    b=aq_b,
-    cx=aq_cx,
-    cy=aq_cy,
-    tbr_serial_id=aq_tbr,
-    tbrDepth=aq_tbr_depth,
-    linesDepths=aq_lines_depth,
-    circlesDepths=aq_circles_depths,
-    name=aq_name,
-)
-
-# AQUATRAZ AFTER 10th of MAY
-# Meta data not needed, but stored for reference:
-# | AB = 42.39 | AC = 39.92 | BC = 44.75 | r_tbr = 24.533016018
-aq_center_new = Point(19.81, 18.79)
-aq_b_new, aq_cx_new, aq_cy_new = 39.62379671662672, 17.721822084838525, 46.0125363983182
-aq_tbr_depth_new = 10
-aq_cage_new = Cage(
-    center=aq_center_new,
-    r=aq_r,
-    b=aq_b_new,
-    cx=aq_cx_new,
-    cy=aq_cy_new,
-    tbr_serial_id=aq_tbr,
-    tbrDepth=aq_tbr_depth_new,
-    linesDepths=aq_lines_depth,
-    circlesDepths=aq_circles_depths,
-    name=aq_name,
-)
-
-# REFERENCE
-# Meta data not needed, but stored for reference:
-# | AB = 42.39 | AC = 39.92 | BC = 44.75 | r_tbr = 24.533016018
-ref_center = Point(21.19, 13.27)
-ref_r = 25
-ref_b, ref_cx, ref_cy = 42.37492120522585, 23.680482062650185, 37.8681107558171
-ref_tbr = [836, 734, 730]
-ref_tbr_depth = 3
-ref_lines_depth = [0, 12.5, 25]
-ref_circles_depths = [0, 12.5]
-ref_name = "Reference"
-ref_cage = Cage(
-    center=ref_center,
-    r=ref_r,
-    b=ref_b,
-    cx=ref_cx,
-    cy=ref_cy,
-    tbr_serial_id=ref_tbr,
-    tbrDepth=ref_tbr_depth,
-    linesDepths=ref_lines_depth,
-    circlesDepths=ref_circles_depths,
-    name=ref_name,
-)
+_includePositioning = toml.load(metafile)["3D"]["include"]
+if _includePositioning:
+    cages = {"cages": ["all", "none"], "all_traces": []}
+    for cageKey in meta:
+        cageMeta = meta[cageKey]
+        cageName = cageMeta["name"]
+        cageGeoemtry = cageMeta["geometry"]
+        cageTBRs = cageMeta["tbr"]
+        cage = Cage(
+            center=Point(cageGeoemtry["centerX"], cageGeoemtry["centerY"]),
+            r=cageGeoemtry["radius"],
+            b=cageGeoemtry["b"],
+            cx=cageGeoemtry["cx"],
+            cy=cageGeoemtry["cy"],
+            tbr_serial_id=cageTBRs["tbrs"],
+            tbrDepth=cageTBRs["depth"],
+            linesDepths=cageTBRs["lines_depth"],
+            circlesDepths=cageTBRs["circles_depth"],
+            name=cageName,
+        )
+        cages.update({cageName: cage})
+        cages["cages"].append(cageName)
+        cages["all_traces"].append(cage.traces)
+else:
+    cages = {}

@@ -235,8 +235,8 @@ def read_from_plasma(type):
 
 # @cache.memoize(timeout=timeout)
 def clean_data(start_ts, name):
-    # db = "Aquatraz.db"
-    db = "../backend/src/backend/dbmanager/databases/iof.db"
+    db = "Aquatraz.db"
+    # db = "../backend/src/backend/dbmanager/databases/iof.db"
 
     # create sql query
     query = db_sql_query(start_ts, name)

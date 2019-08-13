@@ -17,52 +17,26 @@ import plotly
 import os
 
 from layoutCode import app_page_layout, header_colors
-from metaData import aq_cage, aq_cage_new, ref_cage
+from metaData import cages  # empty dict if positioning metadata not included
 
 
+includePositioning = toml.load("frontend_metadata.toml")["3D"]["include"]
+
+# Init
+date_format = "%Y-%m-%d"
+datetime_format = "%Y-%m-%d %H:%M:%S"
+metafile = "frontend_metadata.toml"
+meta = toml.load(metafile)
+project_timestamp_start = int(
+    dt.timestamp(dt.strptime(meta["date_range"]["Project_start"], datetime_format))
+    )
+project_timestamp_end = int(
+    dt.timestamp(dt.strptime(meta["date_range"]["Project_end"], datetime_format))
+    )
 usrpwd = toml.load("usrpwd.toml")
 VALID_USERNAME_PASSWORD_PAIR = [[usrpwd["username"], usrpwd["password"]]]
 app = dash.Dash(__name__)
 auth = dash_auth.BasicAuth(app, VALID_USERNAME_PASSWORD_PAIR)
-
-
-start_project_time = 1541498400  # 6th of november 2018
-end_project_time = 1557496200    # 10th of may
-
-# Init
-tz = "Europe/Oslo"
-dt_format = "%Y-%m-%d %H:%M:%S"
-date_format = "%Y-%m-%d"
-depth_tags = tuple(
-    *[
-        list(range(10, 90, 2))
-        + list(range(97, 107))
-        + list(range(107, 109))
-        + list(range(110, 126, 2))
-    ]
-)
-acc_tags = tuple(range(11, 91, 2))
-aqz_tags = tuple(*[list(range(10, 50)) + list(range(97, 107))])
-aqz_depth = tuple(*[list(range(10, 50, 2)) + list(range(97, 107))])
-ref_depth = tuple(
-    *[list(range(50, 90, 2)) + list(range(107, 109)) + list(range(110, 126, 2))]
-)
-ref_tags = tuple(
-    *[list(range(50, 90)) + list(range(107, 109)) + list(range(110, 126, 2))]
-)
-all_tags = tuple(sorted([*aqz_tags, *ref_tags]))
-aqz_tbrs = tuple([732, 735, 837])
-ref_tbrs = tuple([730, 734, 836])
-all_tbrs = tuple(sorted([*aqz_tbrs, *ref_tbrs]))
-tag_frequencies = (69, 71, 73)
-tag_freq_69 = tuple(range(10, 90))
-tag_freq_71 = tuple(
-    *[list(range(97, 102)) + list(range(107, 109)) + list(range(110, 116, 2))]
-)
-tag_freq_73 = tuple(*[list(range(102, 107)) + list(range(116, 126, 2))])
-
-# PROBABLY LAST AVAILABLE 71/73 data timestamp: 1549949008 | 12.02.2019 06:23:28
-
 
 # Parameters
 showDiv = {"display": "inline-block"}
@@ -119,7 +93,10 @@ def db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices):
     # Filtering of data
     filters = ''
     for column, values in filterChoices["IN"].items():
-        filters += f"{column} IN {values} AND "
+        if len(values)==1:
+            filters += f"{column} = {values[0]} AND "
+        else:
+            filters += f"{column} IN {values} AND "
     for column, valueRange in filterChoices["BETWEEN"].items():
         filters += f"{column} BETWEEN {valueRange[0]} AND {valueRange[1]} AND "
     filters = filters[:-5]
@@ -197,12 +174,12 @@ def get_date_picker(type):
             ),
             dcc.DatePickerRange(
                 id=f"{type}-date-picker-range",
-                #start_date=dt.strftime(dt.today() - timedelta(days=30), "%Y-%m-%d"),
+                #start_date=dt.strftime(dt.today() - timedelta(days=30), date_format),
                 start_date="2019-03-10",
                 end_date="2019-05-11",
                 min_date_allowed="2018-11-06",
                 max_date_allowed="2019-05-11",
-                #max_date_allowed=dt.strftime(dt.today(), "%Y-%m-%d"),
+                #max_date_allowed=dt.strftime(dt.today(), date_format),
                 display_format="DD/MM/YYYY",
                 clearable=False,
                 first_day_of_week=1,
@@ -301,7 +278,7 @@ def get_time_picker(type):
     )
 
 
-def get_cage_tbr_dropdown(type, cage="All"):
+def get_cage_tbr_dropdown(type, cage="all"):
     return html.Div(
         id=f"{type}-cage-tbr-dropdown-div",
         className="app-controls-block",
@@ -313,7 +290,7 @@ def get_cage_tbr_dropdown(type, cage="All"):
                 id=f"{type}-cage-tbr-dropdown",
                 value=cage,
                 options=[
-                    {"label": i, "value": i} for i in ("Aquatraz", "Reference", "All")
+                    {"label": i, "value": i} for i in meta["tags"]["cages"]["cages"]
                 ],
                 clearable=False,
             ),
@@ -329,15 +306,15 @@ def get_tbr_dropdown(type):
             html.Div(className="fullwidth-app-controls-name", children=["Select TBRs"]),
             dcc.Dropdown(
                 id=f"{type}-tbr-dropdown",
-                value=all_tbrs,
-                options=[{"label": f"tbr {i}", "value": i} for i in all_tbrs],
+                value=meta["tbrs"]["all"],
+                options=[{"label": f"tbr {i}", "value": i} for i in meta["tbrs"]["all"]],
                 multi=True,
             ),
         ],
     )
 
 
-def get_cage_tag_dropdown(type, cage="All"):
+def get_cage_tag_dropdown(type, cage="all"):
     return html.Div(
         id=f"{type}-cage-tag-dropdown-div",
         className="app-controls-block",
@@ -349,7 +326,7 @@ def get_cage_tag_dropdown(type, cage="All"):
                 id=f"{type}-cage-tag-dropdown",
                 value=cage,
                 options=[
-                    {"label": i, "value": i} for i in ("Aquatraz", "Reference", "All")
+                    {"label": i, "value": i} for i in meta["tags"]["cages"]["cages"]
                 ],
                 clearable=False,
             ),
@@ -368,8 +345,8 @@ def get_tag_frequency_dropdown(type):
             ),
             dcc.Dropdown(
                 id=f"{type}-tag-frequency-dropdown",
-                value=[69, 71, 73],
-                options=[{"label": f"{i}", "value": i} for i in tag_frequencies],
+                value=meta["tags"]["frequencies"]["frequencies"],
+                options=[{"label": f"{i}", "value": i} for i in meta["tags"]["frequencies"]["frequencies"]],
                 multi=True,
                 clearable=False,
             ),
@@ -388,7 +365,7 @@ def get_tag_dropdown(type):
             dcc.Dropdown(
                 id=f"{type}-tag-id-dropdown",
                 value=[10, 0],
-                options=[{"label": f"tag {i}", "value": i} for i in depth_tags],
+                options=[{"label": f"tag {i}", "value": i} for i in meta["tags"]["all"]],
                 multi=True,
                 clearable=False,
                 placeholder="Select at least one tag frequency first!",
@@ -396,6 +373,23 @@ def get_tag_dropdown(type):
         ],
     )
 
+def get_cage_3D_dropdown(type):
+    return html.Div(
+        id=f"{type}-cage-3D-dropdown-div",
+        className="app-controls-block",
+        children=[
+            html.Div(
+                className="fullwidth-app-controls-name", children=["Select 3D cage render"]
+            ),
+            dcc.Dropdown(
+                id=f"{type}-cage-3D-dropdown",
+                value="all",
+                options=[{"label": f"{cage}", "value": cage} for cage in cages["cages"]],
+                multi=False,
+                clearable=False,
+            )
+        ]
+    )
 
 tag_filter_options = [
     # Date picker
@@ -549,24 +543,6 @@ tbr_filter_options = [
     html.Hr(),
 ]
 
-pos_filter_options = [
-    # Date picker
-    get_date_picker("pos"),
-    # Time picker on/off switch
-    get_time_picker_switch("pos"),
-    # Time picker
-    get_time_picker("pos"),
-    html.Hr(),
-    # Dropdown for cage tags
-    get_cage_tag_dropdown("pos", cage="Aquatraz"),
-    # Dropdown for tag Frequencies
-    get_tag_frequency_dropdown("pos"),
-    # Dropdown for tag IDs
-    get_tag_dropdown("pos"),
-    # Bottom-line
-    html.Hr(),
-]
-
 tag_plot_options = [
     {"label": "Scatter", "value": "scatter"},
     {"label": "Histogram", "value": "histogram"},
@@ -580,17 +556,12 @@ tag_plot_options = [
 tbr_plot_options = list(tag_plot_options)
 tbr_plot_options.append(
     {"label": "Histogram 2D animation test", "value": "histogram2dcontour_animation"}
-)
-pos_plot_options = list(tag_plot_options)
-pos_plot_options.append(
-    {"label": "3D position animation", "value": "scatter3d_animation"}
-)
-
+    )
 all_plot_options = {
     "tag": tag_plot_options,
     "tbr": tbr_plot_options,
-    "pos": pos_plot_options,
-}
+    }
+
 
 tag_axis_options = [
     {"label": "Date", "value": "date"},
@@ -613,19 +584,6 @@ tbr_axis_options = [
     {"label": "Temperature (raw data)", "value": "temperature_data_raw"},
     {"label": "Ambient Noise Average", "value": "noise_avg"},
     {"label": "Ambient Noise Peak", "value": "noise_peak"},
-]
-
-pos_axis_options = [
-    {"label": "Date", "value": "date"},
-    {"label": "Timestamp", "value": "timestamp"},
-    {"label": "Hour of day", "value": "hour"},
-    {"label": "Millisecond", "value": "millisecond"},
-    {"label": "X position (tag)", "value": "x"},
-    {"label": "Y position (tag)", "value": "y"},
-    {"label": "Z position (tag)", "value": "z"},
-    {"label": "Latitude", "value": "latitude"},
-    {"label": "Longitude", "value": "longitude"},
-    {"label": "Frequency", "value": "frequency"},
 ]
 
 plot_scatter_options = [
@@ -652,11 +610,6 @@ axisLabels = dict(
     temperature="Temperature [°C]",
     noise_avg="Ambient Noise Average",
     noise_peak="Ambient Noise Peak",
-    x="X-position [m]",
-    y="Y-position [m]",
-    z="Depth [m]",
-    latitude="Latitude",
-    longitude="Longitude",
 )
 
 plotLabels = dict(
@@ -667,7 +620,6 @@ plotLabels = dict(
     histogram2dcontour="2D Histogram Contour",
     scatter3d="3D Scatter",
     histogram2dcontour_animation="2D Histogram Contour animation (test)",
-    scatter3d_animation="3D Position Animation",
     scatter_ikke="Scatter",
 )
 
@@ -699,8 +651,21 @@ def get_axis_div(type, axis, axisValue):
                 id=f"{type}-{axis}-axis-selection-dropdown",
                 value=axisValue,
                 clearable=False,
-            ),
+            )
         ],
+    )
+
+
+def get_axis_reversed_checklist_div(type):
+    return html.Div(
+        className="app-controls-block",
+        children=[
+            dcc.Checklist(
+                id=f"{type}-axis-reversed-checklist",
+                options=[{"label": f"reversed {axis}-axis", "value": axis} for axis in ("x", "y", "z")],
+                value=["z"],
+            )
+        ]
     )
 
 
@@ -795,6 +760,8 @@ tag_plot_controls = [
     get_axis_div("tag", axis="y", axisValue="tag_data"),
     # Z-axis
     get_axis_div("tag", axis="z", axisValue="snr"),
+    # Get checklist for reversed axis
+    get_axis_reversed_checklist_div("tag"),
     html.Hr(),
     # Plot options
     get_plot_options_div(
@@ -821,47 +788,14 @@ tbr_plot_controls = [
     get_axis_div("tbr", axis="y", axisValue="temperature"),
     # Z-axis
     get_axis_div("tbr", axis="z", axisValue="noise_avg"),
+    # Get checklist for reversed axis
+    get_axis_reversed_checklist_div("tbr"),
     html.Hr(),
     # Plot options
     get_plot_options_div(
         "tbr", "scatter", info="Scatter marker mode", value="markers+lines"
     ),
     get_plot_options_div("tbr", "boxplot", info="Select boxmode", value="group"),
-    html.Hr(),
-]
-
-pos_plot_controls = [
-    html.P(
-        "If you select '3D scatter' or '3D position anmimation', be aware that the "
-        "TBRs of the 'Aquatraz' cage was moved 10th of may, and so the xyz-coordinates "
-        "after this date will not match earlier xyz-positions. The reference cage "
-        "remains unchanged."
-    ),
-    # Plot Type
-    get_plot_selection_div("pos", "scatter3d", pos_plot_options),
-    dcc.ConfirmDialog(
-        id=f"pos-confirm-3d-animation",
-        message=(
-            "Selecting a large time period for this 3d animation plot will result in a "
-            "long response time, and the resulting graph will be slow / not as "
-            "responsive. Especially for tags with frequency 71 and 73 (rapid-updates)."
-        ),
-    ),
-    # Timeseries
-    get_timeseries_switch_div("pos"),
-    html.Hr(),
-    # X-axis
-    get_axis_div("pos", axis="x", axisValue="x"),
-    # Y-axis
-    get_axis_div("pos", axis="y", axisValue="y"),
-    # Z-axis
-    get_axis_div("pos", axis="z", axisValue="z"),
-    html.Hr(),
-    # Plot options
-    get_plot_options_div(
-        "pos", "scatter", info="Scatter marker mode", value="markers+lines"
-    ),
-    get_plot_options_div("pos", "boxplot", info="Select boxmode", value="group"),
     html.Hr(),
 ]
 
@@ -892,6 +826,186 @@ def get_submit_btn_div(type, style=hideDiv):
                 style={"fontSize": 28},
             )
         ],
+    )
+
+
+data_set_options = [
+    {"label": "tag","value": "tag",},
+    {"label": "tbr","value": "tbr",}]
+tag_tab_plot_children = [
+        html.H4(
+            className="what-is",
+            children="Customize the plot",
+        ),
+        html.P(
+            "Select which type of plot and what x-axis "
+            "and y-axis you want. In addition, you can "
+            "also customize how the plot looks "
+            "(markers, lines, markers+lines etc.)"
+        ),
+        html.Hr(),
+        # Tag plot tab
+        html.Div(
+            id="tag-plot-tab",
+            children=tag_plot_controls,
+            style=showDiv,
+        ),
+        # Tbr plot tab
+        html.Div(
+            id="tbr-plot-tab",
+            children=tbr_plot_controls,
+            style=hideDiv,
+        ),
+    ]
+filter_tab_children = [
+    html.H4(
+        className="what-is",
+        children="Filter the data",
+    ),
+    html.P(
+        "Filter the data you want, i.e. select "
+        "specific tag IDs, or TBRs, or cages etc."
+    ),
+    html.Hr(),
+    # TAG filter options
+    html.Div(
+        id="tag-filter-tab",
+        children=tag_filter_options,
+        style=showDiv,
+    ),
+    # TBR filter options
+    html.Div(
+        id="tbr-filter-tab",
+        children=tbr_filter_options,
+        style=hideDiv,
+    ),
+    # Add empty div for callback to work
+    html.Div(
+        id="pos-plot-tab",
+        style=hideDiv,
+    ),
+     # Add empty div for callback to work
+     html.Div(
+        id="pos-filter-tab",
+        style=hideDiv,
+    ),
+]
+
+
+if includePositioning:
+    pos_filter_options = [
+        # Date picker
+        get_date_picker("pos"),
+        # Time picker on/off switch
+        get_time_picker_switch("pos"),
+        # Time picker
+        get_time_picker("pos"),
+        html.Hr(),
+        # Dropdown for cage tags
+        get_cage_tag_dropdown("pos", cage="all"),
+        # Dropdown for 3D cage
+        get_cage_3D_dropdown("pos"),
+        # Dropdown for tag Frequencies
+        get_tag_frequency_dropdown("pos"),
+        # Dropdown for tag IDs
+        get_tag_dropdown("pos"),
+        # Bottom-line
+        html.Hr(),
+    ]
+
+    pos_plot_options = list(tag_plot_options)
+    pos_plot_options.append(
+        {"label": "3D position animation", "value": "scatter3d_animation"}
+    )
+    all_plot_options.update({"pos": pos_plot_options})
+
+    pos_axis_options = [
+        {"label": "Date", "value": "date"},
+        {"label": "Timestamp", "value": "timestamp"},
+        {"label": "Hour of day", "value": "hour"},
+        {"label": "Millisecond", "value": "millisecond"},
+        {"label": "X position (tag)", "value": "x"},
+        {"label": "Y position (tag)", "value": "y"},
+        {"label": "Z position (tag)", "value": "z"},
+        {"label": "Latitude", "value": "latitude"},
+        {"label": "Longitude", "value": "longitude"},
+        {"label": "Frequency", "value": "frequency"},
+    ]
+
+    axisLabels.update(dict(
+        x="X-position [m]",
+        y="Y-position [m]",
+        z="Depth [m]",
+        latitude="Latitude",
+        longitude="Longitude",
+    ))
+
+    plotLabels.update(dict(
+        scatter3d_animation="3D Position Animation"
+    ))
+
+    pos_plot_controls = [
+        html.P(
+            "If you select '3D scatter' or '3D position anmimation', be aware that the "
+            "TBRs of the 'Aquatraz' cage was moved 10th of may, and so the xyz-coordinates "
+            "after this date will not match earlier xyz-positions. The reference cage "
+            "remains unchanged."
+        ),
+        # Plot Type
+        get_plot_selection_div("pos", "scatter3d", pos_plot_options),
+        dcc.ConfirmDialog(
+            id=f"pos-confirm-3d-animation",
+            message=(
+                "Selecting a large time period for this 3d animation plot will result in a "
+                "long response time, and the resulting graph will be slow / not as "
+                "responsive. Especially for tags with frequency 71 and 73 (rapid-updates)."
+            ),
+        ),
+        # Timeseries
+        get_timeseries_switch_div("pos"),
+        html.Hr(),
+        # X-axis
+        get_axis_div("pos", axis="x", axisValue="x"),
+        # Y-axis
+        get_axis_div("pos", axis="y", axisValue="y"),
+        # Z-axis
+        get_axis_div("pos", axis="z", axisValue="z"),
+        # Get checklist for reversed axis
+        get_axis_reversed_checklist_div("pos"),
+        html.Hr(),
+        # Plot options
+        get_plot_options_div(
+            "pos", "scatter", info="Scatter marker mode", value="markers+lines"
+        ),
+        get_plot_options_div("pos", "boxplot", info="Select boxmode", value="group"),
+        html.Hr(),
+    ]
+
+    data_set_options.append(
+        {
+        "label": "position",
+        "value": "pos",
+        }
+    )
+    # Remove empty div and replace with the one below
+    del tag_tab_plot_options[-1]
+    tag_tab_plot_children.append(
+        # pos plot tab
+        html.Div(
+            id="pos-plot-tab",
+            children=pos_plot_controls,
+            style=hideDiv,
+        ),
+    )
+    # Remove empty div and replace with the one below
+    del filter_tab_children[-1]
+    filter_tab_children.append(
+        # POS filter options
+        html.Div(
+            id="pos-filter-tab",
+            children=pos_filter_options,
+            style=hideDiv,
+        ),
     )
 
 
@@ -986,20 +1100,7 @@ def layout_test():
                                                     id="data-set-selection-dropdown",
                                                     value="tag",
                                                     clearable=False,
-                                                    options=[
-                                                        {
-                                                            "label": "tag",
-                                                            "value": "tag",
-                                                        },
-                                                        {
-                                                            "label": "tbr",
-                                                            "value": "tbr",
-                                                        },
-                                                        {
-                                                            "label": "position",
-                                                            "value": "pos",
-                                                        },
-                                                    ],
+                                                    options=data_set_options,
                                                 ),
                                                 html.Hr(),
                                                 html.P(
@@ -1062,37 +1163,7 @@ def layout_test():
                                 value="plot",
                                 children=html.Div(
                                     className="control-tab",
-                                    children=[
-                                        html.H4(
-                                            className="what-is",
-                                            children="Customize the plot",
-                                        ),
-                                        html.P(
-                                            "Select which type of plot and what x-axis "
-                                            "and y-axis you want. In addition, you can "
-                                            "also customize how the plot looks "
-                                            "(markers, lines, markers+lines etc.)"
-                                        ),
-                                        html.Hr(),
-                                        # Tag plot tab
-                                        html.Div(
-                                            id="tag-plot-tab",
-                                            children=tag_plot_controls,
-                                            style=showDiv,
-                                        ),
-                                        # Tbr plot tab
-                                        html.Div(
-                                            id="tbr-plot-tab",
-                                            children=tbr_plot_controls,
-                                            style=hideDiv,
-                                        ),
-                                        # pos plot tab
-                                        html.Div(
-                                            id="pos-plot-tab",
-                                            children=pos_plot_controls,
-                                            style=hideDiv,
-                                        ),
-                                    ],
+                                    children=tag_tab_plot_children,
                                 ),
                             ),
                             # Data filtering tab
@@ -1101,49 +1172,8 @@ def layout_test():
                                 value="filter",
                                 children=html.Div(
                                     className="control-tab",
-                                    children=[
-                                        html.H4(
-                                            className="what-is",
-                                            children="Filter the data",
-                                        ),
-                                        html.P(
-                                            "Filter the data you want, i.e. select "
-                                            "specific tag IDs, or TBRs, or cages etc."
-                                        ),
-                                        html.Hr(),
-                                        # TAG filter options
-                                        html.Div(
-                                            id="tag-filter-tab",
-                                            children=tag_filter_options,
-                                            style=showDiv,
-                                        ),
-                                        # TBR filter options
-                                        html.Div(
-                                            id="tbr-filter-tab",
-                                            children=tbr_filter_options,
-                                            style=hideDiv,
-                                        ),
-                                        # POS filter options
-                                        html.Div(
-                                            id="pos-filter-tab",
-                                            children=pos_filter_options,
-                                            style=hideDiv,
-                                        ),
-                                    ],
+                                    children=filter_tab_children,
                                 ),
-                            ),
-                        ],
-                    ),
-                    # Interval to update data
-                    html.Div(
-                        id="interval-component-div",
-                        style={"display": "none"},
-                        children=[
-                            html.H1(id="number-out", children=""),
-                            dcc.Interval(
-                                id="interval-component",
-                                interval=(60 * 10) * 1000,  # Every 10 minutes
-                                n_intervals=0,
                             ),
                         ],
                     ),
@@ -1175,23 +1205,21 @@ app.layout = app_page_layout(
 
 def tag_dropdown_options(cage, dataType=None, frequencies=[]):
     # Get possible cage tags
-    cageTags = {"All": all_tags, "Aquatraz": aqz_tags, "Reference": ref_tags}
-    tags = cageTags[cage]
+    cageTags = meta["tags"]["cages"].get(cage, meta["tags"]["all"])
 
-    # Get possible data type tags. If no datatype, keep previous list of possible tags
-    typeTags = {
-        "All": list(set(tags).intersection(all_tags)),
-        "depth": list(set(tags).intersection(depth_tags)),
-        "acc": list(set(tags).intersection(acc_tags)),
-    }
-    tags = typeTags.get(dataType, tags)
+    # Get possible data type tags
+    dataTags = meta["tags"]["datatypes"].get(dataType, meta["tags"]["all"])
 
     # Get possible frequency tags
-    freqTags = {69: list(tag_freq_69), 71: list(tag_freq_71), 73: list(tag_freq_73)}
-    freq = []
-    for frequency in frequencies:
-        freq += freqTags[frequency]
-    tags = list(set(tags).intersection(freq))
+    if frequencies:
+        freqTags = []
+        for frequency in frequencies:
+            freqTags += list(meta["tags"]["frequencies"].get(str(frequency), []))
+    else:
+        freqTags = meta["tags"]["all"]
+    
+    # Find list of possible tags as intersection of choices
+    tags = list(set(meta["tags"]["all"]).intersection(cageTags, dataTags, freqTags))
 
     # Pack possible tags into options list and return with tags
     options = [{"label": f"tag {i}", "value": i} for i in tags]
@@ -1199,22 +1227,26 @@ def tag_dropdown_options(cage, dataType=None, frequencies=[]):
 
 
 def cage_tbr_dropdown(cage):
-    cageTbrs = {"All": all_tbrs, "Aquatraz": aqz_tbrs, "Reference": ref_tbrs}
-    tbrs = cageTbrs[cage]
+    tbrs = meta["tbrs"]["cages"].get(cage, meta["tbrs"]["all"])
     options = [{"label": f"tbr {i}", "value": i} for i in tbrs]
     return options, tbrs
 
 
 def empty_tags_selection(cage, dataType, frequencies):
-    defaultTags = {
-        "acc": {"Aquatraz": {69: [11, 0]}, "Reference": {69: [51, 0]}},
-        "depth": {
-            "Aquatraz": {69: [10, 0], 71: [97, 0], 73: [102, 0]},
-            "All": {69: [10, 0], 71: [97, 0], 73: [102, 0]},
-            "Reference": {69: [50, 0], 71: [107, 0], 73: [116, 0]},
-        },
-    }
-    return defaultTags[dataType][cage][min(frequencies)]
+    cageTags = meta["tags"]["cages"].get(cage, meta["tags"]["all"])
+    dataTags = meta["tags"]["datatypes"].get(dataType, meta["tags"]["all"])
+    if frequencies:
+        freqTags = []
+        for frequency in frequencies:
+            freqTags += list(meta["tags"]["frequencies"].get(str(frequency), []))
+        freqTags = freqTags
+    else:
+        freqTags = meta["tags"]["all"]
+    tags = list(set(meta["tags"]["all"]).intersection(cageTags, dataTags, freqTags))
+    if tags:
+        return tags[:2]
+    else:
+        return meta["tags"]["all"][:2]
 
 
 def get_time_of_day(hour, minute, second):
@@ -1281,19 +1313,22 @@ def change_active_data_set_and_graph_tab(datatype):
 )
 def set_tag_start_date(n_clicks):
     if n_clicks is None:
-        return "2019-03-10"
-        #return dt.strftime(dt.today() - timedelta(days=30), "%Y-%m-%d")
-    #return dt.strftime(dt.fromtimestamp(start_project_time), "%Y-%m-%d")
-    return "2018-11-06"
+        if int(dt.today().timestamp()) < project_timestamp_end:
+            return dt.strftime(dt.today() - timedelta(days=30), date_format)
+        else:
+            dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+    return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
 
 
 # END DATE BTN UPDATE
 @app.callback(
     Output("tag-date-picker-range", "end_date"), [Input("tag-end-date-btn", "n_clicks")]
 )
-def set_tag_end_date(_):
-    # return dt.today()
-    return "2019-05-10"
+def set_tag_end_date(n_clicks):
+    if n_clicks is None:
+        if int(dt.today().timestamp()) < project_timestamp_end:
+            return dt.strftime(dt.today(), date_format)
+    return dt.strftime(dt.fromtimestamp(project_timestamp_end), date_format)
 
 
 # ENABLE/DISABLE TIME OF DAY FILTERING
@@ -1361,19 +1396,22 @@ def show_snr_filter_values(value):
 )
 def set_tbr_start_date(n_clicks):
     if n_clicks is None:
-        return "2019-03-10"
-        #return dt.strftime(dt.today() - timedelta(days=30), "%Y-%m-%d")
-    #return dt.strftime(dt.fromtimestamp(start_project_time), "%Y-%m-%d")
-    return "2018-11-06"
+        if int(dt.today().timestamp()) < project_timestamp_end:
+            return dt.strftime(dt.today() - timedelta(days=30), date_format)
+        else:
+            dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+    return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
 
 
 # END DATE BTN UPDATE
 @app.callback(
     Output("tbr-date-picker-range", "end_date"), [Input("tbr-end-date-btn", "n_clicks")]
 )
-def set_tbr_end_date(_):
-    # return dt.today()
-    return "2019-05-10"
+def set_tbr_end_date(n_clicks):
+    if n_clicks is None:
+        if int(dt.today().timestamp()) < project_timestamp_end:
+            return dt.strftime(dt.today(), date_format)
+    return dt.strftime(dt.fromtimestamp(project_timestamp_end), date_format)
 
 
 # ENABLE/DISABLE TIME OF DAY FILTERING
@@ -1427,64 +1465,68 @@ def tbr_slider_filters_temp_noise(temp, avg, peak):
 # | POS DATA FILTERING CALLBACKS |
 # *------------------------------*
 
-# START DATE BTN UPDATE
-@app.callback(
-    Output("pos-date-picker-range", "start_date"),
-    [Input("pos-start-date-btn", "n_clicks")],
-)
-def set_pos_start_date(n_clicks):
-    if n_clicks is None:
-        return "2019-03-10"
-        #return dt.strftime(dt.today() - timedelta(days=30), "%Y-%m-%d")
-    #return dt.strftime(dt.fromtimestamp(start_project_time), "%Y-%m-%d")
-    return "2018-11-06"
+if includePositioning:
+    # START DATE BTN UPDATE
+    @app.callback(
+        Output("pos-date-picker-range", "start_date"),
+        [Input("pos-start-date-btn", "n_clicks")],
+    )
+    def set_pos_start_date(n_clicks):
+        if n_clicks is None:
+            if int(dt.today().timestamp()) < project_timestamp_end:
+                return dt.strftime(dt.today() - timedelta(days=30), date_format)
+            else:
+                dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+        return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
 
 
-# END DATE BTN UPDATE
-@app.callback(
-    Output("pos-date-picker-range", "end_date"), [Input("pos-end-date-btn", "n_clicks")]
-)
-def set_pos_end_date(_):
-    # return dt.today()
-    return "2019-05-10"
+    # END DATE BTN UPDATE
+    @app.callback(
+        Output("pos-date-picker-range", "end_date"), [Input("pos-end-date-btn", "n_clicks")]
+    )
+    def set_pos_end_date(n_clicks):
+        if n_clicks is None:
+            if int(dt.today().timestamp()) < project_timestamp_end:
+                return dt.strftime(dt.today(), date_format)
+        return dt.strftime(dt.fromtimestamp(project_timestamp_end), date_format)
 
 
-# ENABLE/DISABLE TIME OF DAY FILTERING
-@app.callback(
-    [
-        Output("pos-time-picker-div", "style"),
-        Output("pos-start-hour-picker", "value"),
-        Output("pos-start-minute-picker", "value"),
-        Output("pos-start-second-picker", "value"),
-        Output("pos-end-hour-picker", "value"),
-        Output("pos-end-minute-picker", "value"),
-        Output("pos-end-second-picker", "value"),
-    ],
-    [Input("pos-time-switch", "on")],
-)
-def pos_update_time_picker_div(switch):
-    if switch:
-        style = {"display": "inline-block"}
-    else:
-        style = {"display": "none"}
-    return style, 0, 0, 0, 23, 59, 59
+    # ENABLE/DISABLE TIME OF DAY FILTERING
+    @app.callback(
+        [
+            Output("pos-time-picker-div", "style"),
+            Output("pos-start-hour-picker", "value"),
+            Output("pos-start-minute-picker", "value"),
+            Output("pos-start-second-picker", "value"),
+            Output("pos-end-hour-picker", "value"),
+            Output("pos-end-minute-picker", "value"),
+            Output("pos-end-second-picker", "value"),
+        ],
+        [Input("pos-time-switch", "on")],
+    )
+    def pos_update_time_picker_div(switch):
+        if switch:
+            style = {"display": "inline-block"}
+        else:
+            style = {"display": "none"}
+        return style, 0, 0, 0, 23, 59, 59
 
 
-# TAG ID DROPDOWN
-@app.callback(
-    [Output("pos-tag-id-dropdown", "options"), Output("pos-tag-id-dropdown", "value")],
-    [
-        Input("pos-cage-tag-dropdown", "value"),
-        Input("pos-tag-frequency-dropdown", "value"),
-    ],
-    [State("pos-tag-id-dropdown", "value")],
-)
-def update_pos_tag_id_dropdown(tagsCage, frequencies, selected):
-    options, validTags = tag_dropdown_options(tagsCage, "depth", frequencies)
-    tags = list(set(selected).intersection(validTags))
-    if frequencies and not tags:
-        tags = empty_tags_selection(tagsCage, "depth", frequencies)
-    return options, tags
+    # TAG ID DROPDOWN
+    @app.callback(
+        [Output("pos-tag-id-dropdown", "options"), Output("pos-tag-id-dropdown", "value")],
+        [
+            Input("pos-cage-tag-dropdown", "value"),
+            Input("pos-tag-frequency-dropdown", "value"),
+        ],
+        [State("pos-tag-id-dropdown", "value")],
+    )
+    def update_pos_tag_id_dropdown(tagsCage, frequencies, selected):
+        options, validTags = tag_dropdown_options(tagsCage, "depth", frequencies)
+        tags = list(set(selected).intersection(validTags))
+        if frequencies and not tags:
+            tags = empty_tags_selection(tagsCage, "depth", frequencies)
+        return options, tags
 
 
 # *--------------------*
@@ -1532,24 +1574,25 @@ def disable_enable_tbr_plot_options(plotType):
     return scat, box, mSize, mOpac, lWidth, lDash
 
 
-@app.callback(
-    [
-        Output("pos-scatter-options-selection-dropdown", "disabled"),
-        Output("pos-boxplot-options-selection-dropdown", "disabled"),
-        Output(f"pos-plot-marker-size", "disabled"),
-        Output(f"pos-plot-marker-opacity", "disabled"),
-        Output(f"pos-plot-line-width", "disabled"),
-        Output(f"pos-plot-line-dash", "disabled"),
-    ],
-    [Input("pos-plot-type-selection-dropdown", "value")],
-)
-def disable_enable_pos_plot_options(plotType):
-    scat, box, mSize, mOpac, lWidth, lDash = [True] * 6
-    if plotType == "boxplot":
-        box = False
-    elif plotType in ("scatter", "scatter3d", "scatter3d_animation"):
-        scat, mSize, mOpac, lWidth, lDash = [False] * 5
-    return scat, box, mSize, mOpac, lWidth, lDash
+if includePositioning:  
+    @app.callback(
+        [
+            Output("pos-scatter-options-selection-dropdown", "disabled"),
+            Output("pos-boxplot-options-selection-dropdown", "disabled"),
+            Output(f"pos-plot-marker-size", "disabled"),
+            Output(f"pos-plot-marker-opacity", "disabled"),
+            Output(f"pos-plot-line-width", "disabled"),
+            Output(f"pos-plot-line-dash", "disabled"),
+        ],
+        [Input("pos-plot-type-selection-dropdown", "value")],
+    )
+    def disable_enable_pos_plot_options(plotType):
+        scat, box, mSize, mOpac, lWidth, lDash = [True] * 6
+        if plotType == "boxplot":
+            box = False
+        elif plotType in ("scatter", "scatter3d", "scatter3d_animation"):
+            scat, mSize, mOpac, lWidth, lDash = [False] * 5
+        return scat, box, mSize, mOpac, lWidth, lDash
 
 
 @app.callback(
@@ -1576,16 +1619,17 @@ def tbr_enable_timeseries(switch):
     return [xAxis]
 
 
-@app.callback(
-    [Output("pos-x-axis-selection-dropdown", "disabled")],
-    [Input("pos-enable-timeseries", "on")],
-)
-def pos_enable_timeseries(switch):
-    if switch:
-        xAxis = True
-    else:
-        xAxis = False
-    return [xAxis]
+if includePositioning:
+    @app.callback(
+        [Output("pos-x-axis-selection-dropdown", "disabled")],
+        [Input("pos-enable-timeseries", "on")],
+    )
+    def pos_enable_timeseries(switch):
+        if switch:
+            xAxis = True
+        else:
+            xAxis = False
+        return [xAxis]
 
 
 def get_axis_options_from_plot_type(axisOptions, plotType, xAxis):
@@ -1643,21 +1687,22 @@ def update_tbr_plot_options(plotType, xAxis):
     return get_axis_options_from_plot_type(axisOptions, plotType, xAxis)
 
 
-@app.callback(
-    [
-        Output("pos-x-axis-selection-dropdown", "options"),
-        Output("pos-y-axis-selection-dropdown", "options"),
-        Output("pos-z-axis-selection-dropdown", "options"),
-        Output("pos-x-axis-selection-dropdown", "value"),
-        Output("pos-y-axis-selection-dropdown", "disabled"),
-        Output("pos-z-axis-selection-dropdown", "disabled"),
-    ],
-    [Input("pos-plot-type-selection-dropdown", "value")],
-    [State("pos-x-axis-selection-dropdown", "value")],
-)
-def update_plot_options(plotType, xAxis):
-    axisOptions = pos_axis_options
-    return get_axis_options_from_plot_type(axisOptions, plotType, xAxis)
+if includePositioning:
+    @app.callback(
+        [
+            Output("pos-x-axis-selection-dropdown", "options"),
+            Output("pos-y-axis-selection-dropdown", "options"),
+            Output("pos-z-axis-selection-dropdown", "options"),
+            Output("pos-x-axis-selection-dropdown", "value"),
+            Output("pos-y-axis-selection-dropdown", "disabled"),
+            Output("pos-z-axis-selection-dropdown", "disabled"),
+        ],
+        [Input("pos-plot-type-selection-dropdown", "value")],
+        [State("pos-x-axis-selection-dropdown", "value")],
+    )
+    def update_pos_plot_options(plotType, xAxis):
+        axisOptions = pos_axis_options
+        return get_axis_options_from_plot_type(axisOptions, plotType, xAxis)
 
 
 def get_grid_pos(df, numPoints=10):
@@ -1772,34 +1817,41 @@ def get_plot_data(dataset, dff, type, xAxis, yAxis, zAxis, mode, marker, line):
     return data
 
 
-def get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode):
+def get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode, reversedAxis):
+    rangex, rangey, rangez = True, True, True  # default autorange True
+    if "x" in reversedAxis:
+        rangex = "reversed"
+    if "y" in reversedAxis:
+        rangey = "reversed"
+    if "z" in reversedAxis:
+        rangez = "reversed"
     if plotType == "boxplot":
         layout = go.Layout(
             title=plotLabels[plotType],
             boxmode=boxMode,
-            xaxis=dict(title=axisLabels[xAxis]),
-            yaxis=dict(title=axisLabels[yAxis]),
+            xaxis=dict(title=axisLabels[xAxis], autorange=rangex),
+            yaxis=dict(title=axisLabels[yAxis], autorange=rangey),
         )
     elif plotType == "histogram":
         layout = go.Layout(
             title=plotLabels[plotType],
-            xaxis=dict(title=axisLabels[xAxis]),
-            yaxis=dict(title="Frequency"),
+            xaxis=dict(title=axisLabels[xAxis], autorange=rangex),
+            yaxis=dict(title="Frequency", autorange=rangey),
         )
     elif plotType == "scatter3d":
         layout = go.Layout(
             title=plotLabels[plotType],
             scene=dict(
-                xaxis=dict(title=axisLabels[xAxis]),
-                yaxis=dict(title=axisLabels[yAxis]),
-                zaxis=dict(title=axisLabels[zAxis]),
+                xaxis=dict(title=axisLabels[xAxis], autorange=rangex),
+                yaxis=dict(title=axisLabels[yAxis], autorange=rangey),
+                zaxis=dict(title=axisLabels[zAxis], autorange=rangez),
             ),
         )
     else:
         layout = go.Layout(
             title=plotLabels[plotType],
-            xaxis=dict(title=axisLabels[xAxis]),
-            yaxis=dict(title=axisLabels[yAxis]),
+            xaxis=dict(title=axisLabels[xAxis], autorange=rangex),
+            yaxis=dict(title=axisLabels[yAxis], autorange=rangey),
         )
     return layout
 
@@ -1843,6 +1895,7 @@ def get_axis_selections(plotType, xAxis, yAxis, zAxis):
         State("tag-x-axis-selection-dropdown", "value"),
         State("tag-y-axis-selection-dropdown", "value"),
         State("tag-z-axis-selection-dropdown", "value"),
+        State("tag-axis-reversed-checklist", "value"),
         State("tag-scatter-options-selection-dropdown", "value"),
         State("tag-boxplot-options-selection-dropdown", "value"),
         State("tag-plot-marker-size", "value"),
@@ -1869,6 +1922,7 @@ def update_tag_graph(
     xAxis,
     yAxis,
     zAxis,
+    reversedAxes,
     scatterMode,
     boxMode,
     markerSize,
@@ -1922,7 +1976,7 @@ def update_tag_graph(
     data = get_plot_data(
         table, dff, plotType, xAxis, yAxis, zAxis, scatterMode, marker, line
     )
-    layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode)
+    layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode, reversedAxes)
     print(f"Data TAG")
     if timeseries:
         layout["xaxis"] = timeseries_xaxis_dict
@@ -2087,6 +2141,7 @@ def get_animation_tbr_fig(grid, tstamps, dates, tags):
         State("tbr-x-axis-selection-dropdown", "value"),
         State("tbr-y-axis-selection-dropdown", "value"),
         State("tbr-z-axis-selection-dropdown", "value"),
+        State("tbr-axis-reversed-checklist", "value"),
         State("tbr-scatter-options-selection-dropdown", "value"),
         State("tbr-boxplot-options-selection-dropdown", "value"),
         State("tbr-plot-marker-size", "value"),
@@ -2115,6 +2170,7 @@ def update_tbr_graph(
     xAxis,
     yAxis,
     zAxis,
+    reversedAxes,
     scatterMode,
     boxMode,
     markerSize,
@@ -2167,7 +2223,7 @@ def update_tbr_graph(
     data = get_plot_data(
         "tbr", dff, plotType, xAxis, yAxis, zAxis, scatterMode, marker, line
     )
-    layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode)
+    layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode, reversedAxes)
     print(f"Data TBR")
     if plotType == "histogram2dcontour_animation":
         times = dff["hour"].unique()
@@ -2202,28 +2258,22 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
         "name": f"tag {tag_id}",
     }
     fig["data"].append(trace)
-    if cage == "Aquatraz":
-        if date > dt.strptime("2019-05-10", "%Y-%m-%d"):
-            for trace in aq_cage_new.traces:
+    
+    if cage == "all":
+        for traces in zip(cages["all_traces"]):
+            for trace in traces:
                 fig["data"].append(trace)
-        else:
-            for trace in aq_cage.traces:
-                fig["data"].append(trace)
-    elif cage == "Reference":
-        for trace in ref_cage.traces:
-            fig["data"].append(trace)
+    elif cage == "none":
+        pass
     else:
-        if date > dt.strptime("2019-05-10", "%Y-%m-%d"):
-            for trace1, trace2 in zip(aq_cage_new.traces, ref_cage.traces):
-                fig["data"].append(trace1)
-                fig["data"].append(trace2)
-        else:
-            for trace1, trace2 in zip(aq_cage.traces, ref_cage.traces):
-                fig["data"].append(trace1)
-                fig["data"].append(trace2)
+        for cagename in cages["cages"]:
+            if cage == cagename:
+                for trace in cages[cagename].traces:
+                    fig["data"].append(trace)
+                break
 
     # AQ: (21.14, 12.45) | AQ-NEW (19.81, 18.79) | REF (21.19, 13.27)
-    if (cage in ("Aquatraz", "All")) and (date > dt.strptime("2019-05-10", "%Y-%m-%d")):
+    if (cage in ("Aquatraz", "All")) and (date > dt.strptime("2019-05-10", date_format)):
         xrange, yrange, zrange = ([20 - 40, 20 + 40], [19 - 40, 19 + 40], [-40, 0])
     elif cage == "Aquatraz":
         xrange, yrange, zrange = ([21 - 40, 21 + 40], [13 - 40, 13 + 40], [-40, 0])
@@ -2373,132 +2423,130 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
     return fig
 
 
-@app.callback(
-    Output("pos-confirm-3d-animation", "displayed"),
-    [Input("pos-plot-type-selection-dropdown", "value")],
-)
-def warn_user_3d_pos_animation(plotType):
-    if plotType == "scatter3d_animation":
-        return True
-    return False
-
-
-@app.callback(
-    Output("pos-graph", "figure"),
-    [Input("pos-submit-button", "n_clicks")],
-    [
-        State("pos-date-picker-range", "start_date"),
-        State("pos-date-picker-range", "end_date"),
-        State("pos-start-hour-picker", "value"),
-        State("pos-start-minute-picker", "value"),
-        State("pos-start-second-picker", "value"),
-        State("pos-end-hour-picker", "value"),
-        State("pos-end-minute-picker", "value"),
-        State("pos-end-second-picker", "value"),
-        State("pos-cage-tag-dropdown", "value"),
-        State("pos-tag-id-dropdown", "value"),
-        # PLOT OPTIONS
-        State("pos-plot-type-selection-dropdown", "value"),
-        State("pos-x-axis-selection-dropdown", "value"),
-        State("pos-y-axis-selection-dropdown", "value"),
-        State("pos-z-axis-selection-dropdown", "value"),
-        State("pos-scatter-options-selection-dropdown", "value"),
-        State("pos-boxplot-options-selection-dropdown", "value"),
-        State("pos-plot-marker-size", "value"),
-        State("pos-plot-marker-opacity", "value"),
-        State("pos-plot-line-width", "value"),
-        State("pos-plot-line-dash", "value"),
-        State("pos-enable-timeseries", "on"),
-    ],
-)
-def update_pos_graph(
-    n_clicks,
-    start_date,
-    end_date,
-    start_hour,
-    start_min,
-    start_sec,
-    end_hour,
-    end_min,
-    end_sec,
-    cage,
-    tags,
-    plotType,
-    xAxis,
-    yAxis,
-    zAxis,
-    scatterMode,
-    boxMode,
-    markerSize,
-    markerOpacity,
-    lineWidth,
-    lineDash,
-    timeseries,
-):
-    table = "pos"
-    
-    # Force x-axis to be 'date' if timeseries enabled
-    if timeseries:
-        xAxis = "date"
-
-    # Retrieve timestamp integers (gives local timezone timestamps)
-    # slicing here is bad workaround to avoid issues with dt.strptime
-    # | seems like start_date/end_date sometimes is set with more than just YYYY-MM-DD
-    start_date = start_date[:10]
-    end_date = end_date[:10]
-    start_ts = int(dt.strptime(start_date, date_format).timestamp())
-    end_ts = int(dt.strptime(end_date, date_format).timestamp())
-    timeRange = [start_ts, end_ts]
-
-    # Retrieve active axes selections
-    axisSelections = get_axis_selections(plotType, xAxis, yAxis, zAxis)
-
-    # Organize chosen filters / selections into dict
-    inFilters = {
-        "tag_id": tuple(tags),
-    }
-
-    filterChoices = {"IN": inFilters, "BETWEEN": {}}
-
-    # Read data from database and organize into ready-to-use dataframe
-    df = clean_data(table, timeRange, axisSelections, filterChoices) 
-
-    # Filter dataframe
-    start_time = get_time_of_day(start_hour, start_min, start_sec)
-    end_time = get_time_of_day(end_hour, end_min, end_sec)
-    dff = df.between_time(start_time, end_time)
-
-    marker, line = get_marker_line(markerSize, markerOpacity, lineWidth, lineDash)
-    data = get_plot_data(
-        table, dff, plotType, xAxis, yAxis, zAxis, scatterMode, marker, line
+if includePositioning:
+    @app.callback(
+        Output("pos-confirm-3d-animation", "displayed"),
+        [Input("pos-plot-type-selection-dropdown", "value")],
     )
-    layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode)
-    print(f"Data POS")
+    def warn_user_3d_pos_animation(plotType):
+        if plotType == "scatter3d_animation":
+            return True
+        return False
 
-    # Add cage and/or animate
-    if plotType == "scatter3d":
-        date = dt.strptime(start_date, "%Y-%m-%d")
-        if cage == "Aquatraz":
-            if date > dt.strptime("2019-05-10", "%Y-%m-%d"):
-                data = data + aq_cage_new.traces
+
+    @app.callback(
+        Output("pos-graph", "figure"),
+        [Input("pos-submit-button", "n_clicks")],
+        [
+            State("pos-date-picker-range", "start_date"),
+            State("pos-date-picker-range", "end_date"),
+            State("pos-start-hour-picker", "value"),
+            State("pos-start-minute-picker", "value"),
+            State("pos-start-second-picker", "value"),
+            State("pos-end-hour-picker", "value"),
+            State("pos-end-minute-picker", "value"),
+            State("pos-end-second-picker", "value"),
+            State("pos-cage-3D-dropdown", "value"),
+            State("pos-tag-id-dropdown", "value"),
+            # PLOT OPTIONS
+            State("pos-plot-type-selection-dropdown", "value"),
+            State("pos-x-axis-selection-dropdown", "value"),
+            State("pos-y-axis-selection-dropdown", "value"),
+            State("pos-z-axis-selection-dropdown", "value"),
+            State("pos-axis-reversed-checklist", "value"),
+            State("pos-scatter-options-selection-dropdown", "value"),
+            State("pos-boxplot-options-selection-dropdown", "value"),
+            State("pos-plot-marker-size", "value"),
+            State("pos-plot-marker-opacity", "value"),
+            State("pos-plot-line-width", "value"),
+            State("pos-plot-line-dash", "value"),
+            State("pos-enable-timeseries", "on"),
+        ],
+    )
+    def update_pos_graph(
+        n_clicks,
+        start_date,
+        end_date,
+        start_hour,
+        start_min,
+        start_sec,
+        end_hour,
+        end_min,
+        end_sec,
+        cage,
+        tags,
+        plotType,
+        xAxis,
+        yAxis,
+        zAxis,
+        reversedAxes,
+        scatterMode,
+        boxMode,
+        markerSize,
+        markerOpacity,
+        lineWidth,
+        lineDash,
+        timeseries,
+    ):
+        table = "pos"
+        
+        # Force x-axis to be 'date' if timeseries enabled
+        if timeseries:
+            xAxis = "date"
+
+        # Retrieve timestamp integers (gives local timezone timestamps)
+        # slicing here is bad workaround to avoid issues with dt.strptime
+        # | seems like start_date/end_date sometimes is set with more than just YYYY-MM-DD
+        start_date = start_date[:10]
+        end_date = end_date[:10]
+        start_ts = int(dt.strptime(start_date, date_format).timestamp())
+        end_ts = int(dt.strptime(end_date, date_format).timestamp())
+        timeRange = [start_ts, end_ts]
+
+        # Retrieve active axes selections
+        axisSelections = get_axis_selections(plotType, xAxis, yAxis, zAxis)
+
+        # Organize chosen filters / selections into dict
+        inFilters = {
+            "tag_id": tuple(tags),
+        }
+
+        filterChoices = {"IN": inFilters, "BETWEEN": {}}
+
+        # Read data from database and organize into ready-to-use dataframe
+        df = clean_data(table, timeRange, axisSelections, filterChoices) 
+
+        # Filter dataframe
+        start_time = get_time_of_day(start_hour, start_min, start_sec)
+        end_time = get_time_of_day(end_hour, end_min, end_sec)
+        dff = df.between_time(start_time, end_time)
+
+        marker, line = get_marker_line(markerSize, markerOpacity, lineWidth, lineDash)
+        data = get_plot_data(
+            table, dff, plotType, xAxis, yAxis, zAxis, scatterMode, marker, line
+        )
+        layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode, reversedAxes)
+        print(f"Data POS")
+
+        # Add cage and/or animate
+        if plotType == "scatter3d":
+            date = dt.strptime(start_date, date_format)
+            if cage == "all":
+                for traces in cages["all_traces"]:
+                    data = data + traces
+            elif cage == "none":
+                pass
             else:
-                data = data + aq_cage.traces
-        elif cage == "Reference":
-            data = data + ref_cage.traces
+                data = data + cages[cage].traces
+            fig = {"data": data, "layout": layout}
+        elif plotType == "scatter3d_animation":
+            date = dt.strptime(start_date, date_format)
+            times = dff["timestamp"].unique()
+            dates = dff["date"].unique()
+            fig = get_animation_fig(data, times, dates, tags, date, cage)
         else:
-            if date > dt.strptime("2019-05-10", "%Y-%m-%d"):
-                data = data + ref_cage.traces + aq_cage_new.traces
-            else:
-                data = data + ref_cage.traces + aq_cage.traces
-        fig = {"data": data, "layout": layout}
-    elif plotType == "scatter3d_animation":
-        date = dt.strptime(start_date, "%Y-%m-%d")
-        times = dff["timestamp"].unique()
-        dates = dff["date"].unique()
-        fig = get_animation_fig(data, times, dates, tags, date, cage)
-    else:
-        fig = {"data": data, "layout": layout}
-    return fig
+            fig = {"data": data, "layout": layout}
+        return fig
 
 
 @app.callback(

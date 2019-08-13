@@ -71,7 +71,7 @@ def _add_metadata_to_database(dbObj: dbmanager.DatabaseManager) -> None:
     try:
         metaDict = toml.load("src/backend/.config/metadata.toml", _dict=dict)
         code = metaDict["code"]
-        meta = metaDict["metadata"]
+        meta = metaDict["tags"]
         cages = metaDict["cages"]
     except FileNotFoundError:
         logger.error(
@@ -256,6 +256,10 @@ def init_databases(dbName: str, dbBackupName: str) -> None:
         metadata_sql = dbformat.sql_query_metadata_create_table()
         dbObj.add_del_update_db_record(metadata_sql)
         _add_metadata_to_database(dbObj)
+    else:
+        logger.warning(
+            "No metadata.toml file in 'src/backend/config'. Run initmetafile to create one."
+        )
 
     # Close DB
     del dbObj
