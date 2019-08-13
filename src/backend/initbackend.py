@@ -74,8 +74,8 @@ def define_mqtt_config(client: bool = False) -> None:
             else:
                 logger.exception(f"{e} | Error loading mqtt config file")
         else:
-            print(
-                f"current configuration\n"
+            logger.info(
+                f"current MQTT configuration\n"
                 f" |   ip: {address}\n"
                 f" | port: {port}\n"
                 f" | user: {user}\n"
@@ -145,13 +145,13 @@ def init_metadata():
     if metaExists:
         convertExcel = _ask_yes_no(
             "A metadata.toml file already exists. Do you wish to overwrite "
-            "it by converting metadata from an excel (xlsx) file? [y/n]"
+            "it by converting metadata from an excel (xlsx) file? [y/n]: "
         )
     else:
         convertExcel = _ask_yes_no(
             "No project metadata file exists "
             "(needed for data type conversion, positioning and front-end etc.). "
-            "Do you wish to convert metadata from an excel (xlsx) file? [y/n]"
+            "Do you wish to convert metadata from an excel (xlsx) file? [y/n]: "
         )
     if convertExcel:
         logger.info("Converting excel metadata to project metadata.")

@@ -90,7 +90,7 @@ def _add_metadata_to_database(dbObj: dbmanager.DatabaseManager) -> None:
         row = []
         # Convert python list to str for database insertion: [a, b, c] -> '[a, b, c]'
         for codeKey in meta[rowKey]:
-            if codeKey in meta[rowKey]:
+            if codeKey == "in":
                 continue  # ignore include-field, only for frontend
             tag_id = meta[rowKey][code["tag_id"]]
             freq = meta[rowKey][code["frequency"]]
