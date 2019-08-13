@@ -72,7 +72,7 @@ def _add_metadata_to_database(dbObj: dbmanager.DatabaseManager) -> None:
         metaDict = toml.load("src/backend/.config/metadata.toml", _dict=dict)
         code = metaDict["code"]
         meta = metaDict["tags"]
-        cages = metaDict["cages"]
+        cages = metaDict["3D"]
     except FileNotFoundError:
         logger.error(
             "no metadata toml file found in src/backend/.config! exiting program"

@@ -145,13 +145,13 @@ def init_metadata():
     if metaExists:
         convertExcel = _ask_yes_no(
             "A metadata.toml file already exists. Do you wish to overwrite "
-            "it by converting metadata from an excel (xlsx) file?"
+            "it by converting metadata from an excel (xlsx) file? [y/n]"
         )
     else:
         convertExcel = _ask_yes_no(
             "No project metadata file exists "
             "(needed for data type conversion, positioning and front-end etc.). "
-            "Do you wish to convert metadata from an excel (xlsx) file?"
+            "Do you wish to convert metadata from an excel (xlsx) file? [y/n]"
         )
     if convertExcel:
         logger.info("Converting excel metadata to project metadata.")

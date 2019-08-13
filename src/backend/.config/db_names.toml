@@ -1,2 +1,2 @@
-main_database = "iof.db"
-backup_database = "backupDB.db"
+main_database = ""
+backup_database = ""
