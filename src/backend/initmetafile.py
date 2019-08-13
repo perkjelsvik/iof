@@ -75,7 +75,7 @@ def excel_meta_to_toml(
             cagename = d["cagename"][i]
             tbrCageDict = {
                 "tbrs": [int(tbrID) for tbrID in str.split(d["tbrs"][i], ", ")],
-                "tbr_depth": d["tbr_depth"][i],
+                "depth": d["tbr_depth"][i],
                 "lines_depth": [
                     float(depth) for depth in str.split(d["lines_depth"][i], ", ")
                 ],

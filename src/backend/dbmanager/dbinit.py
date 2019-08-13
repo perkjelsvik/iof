@@ -85,22 +85,28 @@ def _add_metadata_to_database(dbObj: dbmanager.DatabaseManager) -> None:
     # extract data from dict and make ready for database insertion
     data = []
     convData = {}
-    posData = {"cages": cages, "tags": {}}
+    posData = {"3D": cages, "tags": {}}
     for rowKey in meta:
         row = []
         # Convert python list to str for database insertion: [a, b, c] -> '[a, b, c]'
         for codeKey in meta[rowKey]:
-            id = meta[rowKey][code["tag_id"]]
+            if codeKey in meta[rowKey]:
+                continue  # ignore include-field, only for frontend
+            tag_id = meta[rowKey][code["tag_id"]]
             freq = meta[rowKey][code["frequency"]]
             # extract conversion factors for tag_id and frequency if they exist
             if codeKey == code["conversion_factor"]:
                 conv = meta[rowKey][code["conversion_factor"]]
-                convRow = {"tag_id": id, "frequency": freq, "conversion_factor": conv}
+                convRow = {
+                    "tag_id": tag_id,
+                    "frequency": freq,
+                    "conversion_factor": conv,
+                }
                 convData.update({rowKey: convRow})
             # if tag data is depth, add to position metadata toml-file
             if meta[rowKey][code["data_type"]] == "Depth [m]":
                 cageName = meta[rowKey][code["cage_name"]]
-                posRow = {"tag_id": id, "frequency": freq, "cage_name": cageName}
+                posRow = {"tag_id": tag_id, "frequency": freq, "cage_name": cageName}
                 posData["tags"].update({rowKey: posRow})
             row.append(meta[rowKey][codeKey])
         data.append(row)
@@ -123,7 +129,7 @@ def _add_metadata_to_database(dbObj: dbmanager.DatabaseManager) -> None:
     colConv, valConv, lenConv, col, val = dbformat.conversion_columns_values_len()
 
     # insert metadata in metadata table of main_database
-    for i, values in enumerate(data):
+    for values in data:
         try:
             if len(values) == lenConv:
                 dbObj.add_del_update_db_record(

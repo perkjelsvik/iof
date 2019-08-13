@@ -101,11 +101,7 @@ def init_metadata(old=False) -> Optional[Tuple[CageMetaDict, List[TagsMeta]]]:
     global _cages
     global _depth_tags
     try:
-        # metaDict: MetaDict = toml.load("../.config/bench_position.toml")
-        # metaDict: MetaDict = toml.load("../.config/metadata_positioning.toml")
-        metaDict: MetaDict = toml.load("src/backend/.config/metadata_positioning.toml")[
-            "3D"
-        ]
+        metaDict: MetaDict = toml.load("src/backend/.config/metadata_positioning.toml")
     except FileNotFoundError:
         logger.error(
             "NB! No metadata position config file found. Can't do positioning."
@@ -116,24 +112,25 @@ def init_metadata(old=False) -> Optional[Tuple[CageMetaDict, List[TagsMeta]]]:
         return None
     else:
         cages, depth_tags = {}, []
-        for cage_key in metaDict["active_cages"]:
+        cage3D = metaDict["3D"]
+        for cage_key in cage3D["active_cages"]:
             cageGeo = None
-            cageName = metaDict["cages"][cage_key]["name"]
-            tbrList = metaDict["cages"][cage_key]["tbr"]["tbrs"]
-            depth = metaDict["cages"][cage_key]["tbr"]["depth"]
-            if "geometry" in metaDict["cages"][cage_key]:
-                geo = metaDict["cages"][cage_key]["geometry"]
-                latlong = metaDict["cages"][cage_key]["latlong"]
+            cageName = cage3D["cages"][cage_key]["name"]
+            tbrList = cage3D["cages"][cage_key]["tbr"]["tbrs"]
+            depth = cage3D["cages"][cage_key]["tbr"]["depth"]
+            if "geometry" in cage3D["cages"][cage_key]:
+                geo = cage3D["cages"][cage_key]["geometry"]
+                latlong = cage3D["cages"][cage_key]["latlong"]
                 center = Point(geo["centerX"], geo["centerY"])
                 circle = CageCircle(center, geo["radius"])
                 cageGeo = CageGeometry(
                     circle=circle,
-                    lat_A=latlong["lat_A_old"],
-                    lat_B=latlong["lat_B_old"],
-                    lat_C=latlong["lat_C_old"],
-                    lon_A=latlong["lon_A_old"],
-                    lon_B=latlong["lon_B_old"],
-                    lon_C=latlong["lon_C_old"],
+                    lat_A=latlong["lat_A"],
+                    lat_B=latlong["lat_B"],
+                    lat_C=latlong["lat_C"],
+                    lon_A=latlong["lon_A"],
+                    lon_B=latlong["lon_B"],
+                    lon_C=latlong["lon_C"],
                 )
             cages.update({cageName: CageMeta(cageName, tbrList, depth, cageGeo)})
         for tag_key in metaDict["tags"]:
@@ -427,7 +424,7 @@ def _get_cage_and_TBR_data(tbr_serial_id: int) -> Optional[CageMeta]:
 
 def _get_list_of_triplets_from_db(
     tag_id: int, frequency: int, TBRs: List[int], dbObj: DatabaseManager
-) -> list[pd.DataFrame]:
+) -> List[pd.DataFrame]:
     """Return list of pandas DataFrames of tag triplets for complete database.
 
     Extracts all messages of (tag_id, frequency) combination from main database into a
