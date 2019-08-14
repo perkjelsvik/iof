@@ -1,6 +1,18 @@
 import utm
 import toml
 import numpy as np
+from getpass import getpass
+
+
+def ask_yes_no(prompt: str) -> bool:
+    """Simple function that prompts user until they answer 'y' or 'n'"""
+    answer = input(prompt).lower()
+    while answer not in ("y", "n"):
+        answer = input("Please enter 'y' or 'n': ").lower()
+    if answer == "y":
+        return True
+    else:
+        return False
 
 
 def cart2pol(x, y):
@@ -19,16 +31,16 @@ def extract_positioning_b_cx_cy(dict_3D):
     cageMeta = {}
     for cage in dict_3D["cages"]:
         lat_A, lon_A = (
-            dict_3D[cage]["latlong"]["lat_A"],
-            dict_3D[cage]["latlong"]["lon_A"],
+            dict_3D["cages"][cage]["latlong"]["lat_A"],
+            dict_3D["cages"][cage]["latlong"]["lon_A"],
         )
         lat_B, lon_B = (
-            dict_3D[cage]["latlong"]["lat_B"],
-            dict_3D[cage]["latlong"]["lon_B"],
+            dict_3D["cages"][cage]["latlong"]["lat_B"],
+            dict_3D["cages"][cage]["latlong"]["lon_B"],
         )
         lat_C, lon_C = (
-            dict_3D[cage]["latlong"]["lat_C"],
-            dict_3D[cage]["latlong"]["lon_C"],
+            dict_3D["cages"][cage]["latlong"]["lat_C"],
+            dict_3D["cages"][cage]["latlong"]["lon_C"],
         )
         utm_A = utm.from_latlon(lat_A, lon_A)
         utm_B = utm.from_latlon(lat_B, lon_B)
@@ -112,13 +124,13 @@ def convert_backend_meta_to_frontend(filename_backend, filename_frontend):
     # Iterate through tbr dict keys
     for key in tbrs:
         # Check if tbr serial number should be included in frontend metadata
-        if not tbrs[key]["in"]:
+        if not tbrs[key]["include"]:
             continue
 
         # Extract frequency, cagename and tbr serial id
-        frequency = str(tbrs[key]["f"])  # f = frequency
-        cagename = tbrs[key]["cn"]  # cn = cagename
-        tbrID = int(tbrs[key]["i"])  # i = tbr_serial_id
+        frequency = str(tbrs[key]["frequency"])  # f = frequency
+        cagename = tbrs[key]["cage_name"]  # cn = cagename
+        tbrID = int(tbrs[key]["tbr_serial_id"])  # i = tbr_serial_id
 
         # For every new frequency and cage, add a new list
         if frequency not in freqTBRs:
@@ -135,13 +147,12 @@ def convert_backend_meta_to_frontend(filename_backend, filename_frontend):
 
     # Organize tbrs metadata into dict
     tbrs = {"all": allTBRs, "frequencies": freqTBRs, "cages": cageTBRs}
-    print(cage3D)
+
     # Get 3D paramters b, cx, and cy for all cages
     pos_parameters = extract_positioning_b_cx_cy(cage3D)
-    print(pos_parameters)
     for cage in pos_parameters:
         cage3D["cages"][cage]["geometry"].update(pos_parameters[cage])
-    print(cage3D)
+
     # Organize all gathered metadata to dict and write to toml-file
     metaDict = {"date_range": dateRange, "tags": tags, "tbrs": tbrs, "3D": cage3D}
 
@@ -149,10 +160,41 @@ def convert_backend_meta_to_frontend(filename_backend, filename_frontend):
     with open(filename_frontend, "w") as f:
         toml.dump(metaDict, f)
 
-    print("DONE GENERATING FRONTEND METADATA FILE")
+    print("Done converting backend metadata to frontend metadata")
+
+
+def usrpwd_toml(tomlDestination="usrpwd.toml"):
+    print(
+        "At least one username/password pair is needed for authentication. "
+        "It will be stored next to the dash app in a toml file in plain text."
+    )
+    user = input("username: ")
+    pwd = getpass()
+    usrpwd = {user: pwd}
+    moreUsers = ask_yes_no("Do you wish to add another username/password pair? [y/n]: ")
+    while moreUsers:
+        user = input("username: ")
+        if user in usrpwd:
+            print("This username is already taken, please select a different one.")
+            moreUsers = ask_yes_no(
+                "Do you still want to add new username/password pair? [y/n]: "
+            )
+            if moreUsers:
+                break
+        pwd = getpass()
+        usrpwd[user] = pwd
+        moreUsers = ask_yes_no(
+            "Do you wish to add another username/password pair? [y/n]: "
+        )
+    with open(tomlDestination, "w") as f:
+        toml.dump(usrpwd, f)
+    print(
+        "Successfully added username/password pair(s) to file! Can now authenticate in Dash app."
+    )
 
 
 if __name__ == "__main__":
     backMeta = "../backend/.config/metadata.toml"
     frontMeta = "frontend_metadata.toml"
     convert_backend_meta_to_frontend(backMeta, frontMeta)
+    usrpwd_toml()

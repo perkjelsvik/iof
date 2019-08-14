@@ -98,7 +98,7 @@ class Cage:
                 y=self.tbr[self.tbr["TBR"] == id]["y"],
                 z=self.tbr[self.tbr["TBR"] == id]["z"],
                 mode="markers",
-                marker=dict(size=10, opacity=1, color="red"),
+                marker=dict(size=8, opacity=1, color="red"),
                 name=f"TBR {id}",
                 legendgroup=f"{self.name} TBRs",
             )
@@ -140,7 +140,8 @@ if _includePositioning:
     cages = {"cages": ["all", "none"], "all_traces": []}
     for cageKey in meta:
         cageMeta = meta[cageKey]
-        cageName = cageMeta["name"]
+        # should be cageMeta["name"], but is broken if multiple with same cage name
+        cageName = cageKey
         cageGeoemtry = cageMeta["geometry"]
         cageTBRs = cageMeta["tbr"]
         cage = Cage(

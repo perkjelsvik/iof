@@ -15,6 +15,7 @@ import dash_auth
 import toml
 import plotly
 import os
+from pathlib import Path
 
 from layoutCode import app_page_layout, header_colors
 from metaData import cages  # empty dict if positioning metadata not included
@@ -33,10 +34,30 @@ project_timestamp_start = int(
 project_timestamp_end = int(
     dt.timestamp(dt.strptime(meta["date_range"]["Project_end"], datetime_format))
     )
-usrpwd = toml.load("usrpwd.toml")
-VALID_USERNAME_PASSWORD_PAIR = [[usrpwd["username"], usrpwd["password"]]]
+VALID_USERNAME_PASSWORD_PAIR = toml.load("usrpwd.toml")
 app = dash.Dash(__name__)
 auth = dash_auth.BasicAuth(app, VALID_USERNAME_PASSWORD_PAIR)
+
+dbPath = "../backend/dbmanager/databases/"
+dbConfig = "../backend/.config/db_names.toml"
+dbName = ""
+
+
+# if db_names.toml doesn't exist: create it. If exists, load dbDict from it.
+if not Path(dbConfig).exists():
+    print(
+        "Did not find toml config file for db_names - "
+        "cannot run dash app, exiting."
+    )
+    exit()
+else:
+    try:
+        dbDict = toml.load(dbConfig, _dict=dict)
+    except Exception:
+        print("Caught an error while loading db names for backup, exiting.")
+        exit()
+    else:
+        dbName = dbDict["main_database"]
 
 # Parameters
 showDiv = {"display": "inline-block"}
@@ -75,7 +96,7 @@ timeseries_xaxis_dict = dict(
 )
 
 
-def db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices):
+def db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices, includeTimestamp=False):
     # Column selection
     if table == "tag" or table == "positions":
         columns = 'tag_id, '
@@ -85,6 +106,8 @@ def db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices):
         columnList = ["tbr_serial_id",]
     if "date" not in axisSelections:
         columns += "date, "
+    if includeTimestamp:
+        columns += "timestamp, "
     for column in axisSelections:
         columns += f'{column}, '
         columnList.append(column)
@@ -139,19 +162,16 @@ def clean_df(df, columns):
     return df
 
 
-def clean_data(table, timeRange, axisSelections, filterChoices):
+def clean_data(table, timeRange, axisSelections, filterChoices, includeTimestamp=False):
     if table=="pos":
         table = "positions"
-    # db = "Aquatraz.db"
-    # db = "../backend/src/backend/dbmanager/databases/iof.db"
-    db = "iof.db"
 
     # create sql query
     print("Creating SQL query")
-    query, columns = db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices)
+    query, columns = db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices, includeTimestamp)
     # Read from databse
     print("Reading from database")
-    con = sqlite3.connect(db)
+    con = sqlite3.connect(dbName)
     print(query)
     df = pd.read_sql(query, con)
     print(df)
@@ -554,9 +574,6 @@ tag_plot_options = [
 ]
 
 tbr_plot_options = list(tag_plot_options)
-tbr_plot_options.append(
-    {"label": "Histogram 2D animation test", "value": "histogram2dcontour_animation"}
-    )
 all_plot_options = {
     "tag": tag_plot_options,
     "tbr": tbr_plot_options,
@@ -619,7 +636,6 @@ plotLabels = dict(
     histogram2d="2D Histogram",
     histogram2dcontour="2D Histogram Contour",
     scatter3d="3D Scatter",
-    histogram2dcontour_animation="2D Histogram Contour animation (test)",
     scatter_ikke="Scatter",
 )
 
@@ -856,6 +872,11 @@ tag_tab_plot_children = [
             children=tbr_plot_controls,
             style=hideDiv,
         ),
+        # Add empty div for callback to work
+        html.Div(
+            id="pos-plot-tab",
+            style=hideDiv,
+        ),
     ]
 filter_tab_children = [
     html.H4(
@@ -881,11 +902,6 @@ filter_tab_children = [
     ),
     # Add empty div for callback to work
     html.Div(
-        id="pos-plot-tab",
-        style=hideDiv,
-    ),
-     # Add empty div for callback to work
-     html.Div(
         id="pos-filter-tab",
         style=hideDiv,
     ),
@@ -958,7 +974,7 @@ if includePositioning:
             message=(
                 "Selecting a large time period for this 3d animation plot will result in a "
                 "long response time, and the resulting graph will be slow / not as "
-                "responsive. Especially for tags with frequency 71 and 73 (rapid-updates)."
+                "responsive. Especially for tags with rapid-updates."
             ),
         ),
         # Timeseries
@@ -988,7 +1004,7 @@ if includePositioning:
         }
     )
     # Remove empty div and replace with the one below
-    del tag_tab_plot_options[-1]
+    del tag_tab_plot_children[-1]
     tag_tab_plot_children.append(
         # pos plot tab
         html.Div(
@@ -1730,25 +1746,6 @@ def get_grid_pos(df, numPoints=10):
     return [grid, grid2]
 
 
-def get_grid_tbr(df):
-    dates = df["date"].str.slice(0, 10, 1).unique()
-
-    # Make the grid
-    grid = pd.DataFrame()
-    col_name_template = "{date}+{header}_grid"
-    for date in dates:
-        df_by_date = df[df.date.str.contains(date)]
-        for col in ["hour", "noise_avg"]:
-            temp = col_name_template.format(date=date, header=col)
-            if df_by_date[col].size != 0:
-                grid = grid.append(
-                    {"value": list(df_by_date[col]), "key": temp}, ignore_index=True
-                )
-    print("GRID")
-    print(grid)
-    return grid
-
-
 def get_plot_data(dataset, dff, type, xAxis, yAxis, zAxis, mode, marker, line):
     traceKeys = {"tag": "tag_id", "tbr": "tbr_serial_id", "pos": "tag_id"}
     traceNames = {"tag": "tag", "tbr": "tbr", "pos": "tag"}
@@ -1801,8 +1798,6 @@ def get_plot_data(dataset, dff, type, xAxis, yAxis, zAxis, mode, marker, line):
         data = [go.Histogram2d(x=dff[xAxis], y=dff[yAxis])]
     elif type == "histogram2dcontour":
         data = [go.Histogram2dContour(x=dff[xAxis], y=dff[yAxis])]
-    elif type == "histogram2dcontour_animation":
-        data = get_grid_tbr(dff)
     elif type == "boxplot":
         data = [
             go.Box(
@@ -1984,140 +1979,6 @@ def update_tag_graph(
     return fig
 
 
-def get_animation_tbr_fig(grid, tstamps, dates, tags):
-    fig = {"data": [], "layout": {}, "frames": []}
-    date = min(dates)
-    col_name_template = "{date}+{header}_grid"
-
-    # Create initial trace and cage traces
-    trace = {
-        "x": grid.loc[
-            grid["key"] == col_name_template.format(date=date, header="hour"), "value"
-        ].values[0],
-        "y": grid.loc[
-            grid["key"] == col_name_template.format(date=date, header="noise_avg"),
-            "value",
-        ].values[0],
-        "type": "histogram2d",
-        "nbinsx": 24,
-    }
-    fig["data"].append(trace)
-
-    # Modify the layout
-    fig["layout"]["xaxis"] = {"title": "Hour of day", "range": [0, 24]}
-    fig["layout"]["yaxis"] = {"title": "Average Ambient Noise", "range": [0, 75]}
-    fig["layout"]["title"] = f"Average ambient noise per day over time"
-    fig["layout"]["showlegend"] = False
-    fig["layout"]["hovermode"] = "closest"
-    fig["layout"]["sliders"] = {
-        "args": ["slider.value", {"duration": 600, "ease": "cubic-in-out"}],
-        "initialValue": date,
-        "plotlycommand": "animate",
-        "values": dates,
-        "visible": True,
-    }
-    sliders_dict = {
-        "active": 0,
-        "yanchor": "top",
-        "xanchor": "left",
-        "currentvalue": {
-            "font": {"size": 20},
-            "prefix": "Date: ",
-            "visible": True,
-            "xanchor": "right",
-        },
-        "transition": {"duration": 500, "easing": "cubic-in-out"},
-        "pad": {"b": 10, "t": 50},
-        "len": 0.9,
-        "x": 0.1,
-        "y": 0,
-        "steps": [],
-    }
-
-    for date in dates:
-        # Make a frame for each timestamp
-        frame = {"data": [], "name": date}
-
-        # Make a trace for each frame
-        trace = {
-            "x": grid.loc[
-                grid["key"] == col_name_template.format(date=date, header="hour"),
-                "value",
-            ].values[0],
-            "y": grid.loc[
-                grid["key"] == col_name_template.format(date=date, header="noise_avg"),
-                "value",
-            ].values[0],
-            "type": "histogram2d",
-            "nbinsx": 24,
-        }
-
-        # Add traces to the frame
-        frame["data"].append(trace)
-        fig["frames"].append(frame)
-
-        slider_step = {
-            "args": [
-                [date],
-                {
-                    "frame": {"duration": 100, "redraw": True},
-                    "mode": "immediate",
-                    "transition": {"duration": 100},
-                },
-            ],
-            "label": date,
-            "method": "animate",
-        }
-        sliders_dict["steps"].append(slider_step)
-
-    fig["layout"]["sliders"] = [sliders_dict]
-
-    # Add play/pause button to figure
-    fig["layout"]["updatemenus"] = [
-        {
-            "buttons": [
-                {
-                    "args": [
-                        None,
-                        {
-                            "frame": {"duration": 500, "redraw": True},
-                            "fromcurrent": True,
-                            "transition": {
-                                "duration": 400,
-                                "easing": "quadratic-in-out",
-                            },
-                        },
-                    ],
-                    "label": "Play",
-                    "method": "animate",
-                },
-                {
-                    "args": [
-                        [None],
-                        {
-                            "frame": {"duration": 0, "redraw": True},
-                            "mode": "immediate",
-                            "transition": {"duration": 0},
-                        },
-                    ],
-                    "label": "Pause",
-                    "method": "animate",
-                },
-            ],
-            "direction": "left",
-            "pad": {"r": 10, "t": 87},
-            "showactive": False,
-            "type": "buttons",
-            "x": 0.1,
-            "xanchor": "right",
-            "y": 0,
-            "yanchor": "top",
-        }
-    ]
-
-    return fig
-
-
 @app.callback(
     Output("tbr-graph", "figure"),
     [Input("tbr-submit-button", "n_clicks")],
@@ -2225,16 +2086,11 @@ def update_tbr_graph(
     )
     layout = get_plot_layout(xAxis, yAxis, zAxis, plotType, boxMode, reversedAxes)
     print(f"Data TBR")
-    if plotType == "histogram2dcontour_animation":
-        times = dff["hour"].unique()
-        dates = dff["date"].str.slice(0, 10, 1).unique()
-        fig = get_animation_tbr_fig(data, times, dates, tbrs)
-    else:
-        fig = {"data": data, "layout": layout}
+    fig = {"data": data, "layout": layout}
     return fig
 
 
-def get_animation_fig(grids, tstamps, dates, tags, date, cage):
+def get_animation_fig(grids, tstamps, dates, tags, date, cage, markerSize):
     fig = {"data": [], "layout": {}, "frames": []}
     tstamp = min(tstamps)
     grid, grid2 = grids
@@ -2257,8 +2113,9 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
         "marker": {"opacity": 0.5},
         "name": f"tag {tag_id}",
     }
+
     fig["data"].append(trace)
-    
+
     if cage == "all":
         for traces in zip(cages["all_traces"]):
             for trace in traces:
@@ -2266,28 +2123,24 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
     elif cage == "none":
         pass
     else:
-        for cagename in cages["cages"]:
-            if cage == cagename:
-                for trace in cages[cagename].traces:
-                    fig["data"].append(trace)
-                break
+        for trace in cages[cage].traces:
+            fig["data"].append(trace)
 
-    # AQ: (21.14, 12.45) | AQ-NEW (19.81, 18.79) | REF (21.19, 13.27)
-    if (cage in ("Aquatraz", "All")) and (date > dt.strptime("2019-05-10", date_format)):
-        xrange, yrange, zrange = ([20 - 40, 20 + 40], [19 - 40, 19 + 40], [-40, 0])
-    elif cage == "Aquatraz":
-        xrange, yrange, zrange = ([21 - 40, 21 + 40], [13 - 40, 13 + 40], [-40, 0])
-    elif cage == "Reference":
-        xrange, yrange, zrange = ([21 - 40, 21 + 40], [13 - 40, 13 + 40], [-40, 0])
-    else:
-        xrange, yrange, zrange = ([21 - 40, 21 + 40], [13 - 40, 13 + 40], [-40, 0])
+    if cage == "all":
+        cage = cages[2]
+    cageGeo = meta["3D"]["cages"][cage]["geometry"]
+    offset = 40
+    rangeX = [int(cageGeo["centerX"]) - offset, int(cageGeo["centerX"]) + offset]
+    rangeY = [int(cageGeo["centerY"]) - offset, int(cageGeo["centerY"]) + offset]
+    rangeZ = [offset, 0]
+
     fig["layout"]["scene"] = {}
     fig["layout"]["scene"]["xaxis"] = {"title": "X [m]", "autorange": False}
     fig["layout"]["scene"]["yaxis"] = {"title": "Y [m]", "autorange": False}
     fig["layout"]["scene"]["zaxis"] = {"title": "Z [m]", "autorange": False}
-    fig["layout"]["scene"]["xaxis"]["range"] = xrange
-    fig["layout"]["scene"]["yaxis"]["range"] = yrange
-    fig["layout"]["scene"]["zaxis"]["range"] = zrange
+    fig["layout"]["scene"]["xaxis"]["range"] = rangeX
+    fig["layout"]["scene"]["yaxis"]["range"] = rangeY
+    fig["layout"]["scene"]["zaxis"]["range"] = rangeZ
     fig["layout"]["title"] = f"3D fish (tag {tag_id}) position animation"
     fig["layout"]["showlegend"] = False
     fig["layout"]["hovermode"] = "closest"
@@ -2336,7 +2189,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
             ].values[0],
             "mode": "markers+lines",
             "type": "scatter3d",
-            "marker": {"opacity": 0.5},
+            "marker": {"size": markerSize, "opacity": 0.5},
         }
         trace_now = {
             "x": grid2.loc[
@@ -2353,7 +2206,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
             ].values[0],
             "mode": "markers+lines",
             "type": "scatter3d",
-            "marker": {"color": "orange"},
+            "marker": {"size": markerSize, "color": "orange"},
         }
 
         # Add traces to the frame
@@ -2365,7 +2218,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
             "args": [
                 [tstamp],
                 {
-                    "frame": {"duration": 100, "redraw": False},
+                    "frame": {"duration": 100, "redraw": True},
                     "mode": "immediate",
                     "transition": {"duration": 100},
                 },
@@ -2385,7 +2238,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
                     "args": [
                         None,
                         {
-                            "frame": {"duration": 500, "redraw": False},
+                            "frame": {"duration": 500, "redraw": True},
                             "fromcurrent": True,
                             "transition": {
                                 "duration": 300,
@@ -2400,7 +2253,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage):
                     "args": [
                         [None],
                         {
-                            "frame": {"duration": 0, "redraw": False},
+                            "frame": {"duration": 0, "redraw": True},
                             "mode": "immediate",
                             "transition": {"duration": 0},
                         },
@@ -2511,10 +2364,13 @@ if includePositioning:
             "tag_id": tuple(tags),
         }
 
-        filterChoices = {"IN": inFilters, "BETWEEN": {}}
+        filterChoices = {"IN": inFilters, "BETWEEN": {"timestamp": tuple(timeRange)}}
 
         # Read data from database and organize into ready-to-use dataframe
-        df = clean_data(table, timeRange, axisSelections, filterChoices) 
+        if plotType == "scatter3d_animation":
+            df = clean_data(table, timeRange, axisSelections, filterChoices, includeTimestamp=True)
+        else:
+            df = clean_data(table, timeRange, axisSelections, filterChoices)
 
         # Filter dataframe
         start_time = get_time_of_day(start_hour, start_min, start_sec)
@@ -2543,9 +2399,9 @@ if includePositioning:
             date = dt.strptime(start_date, date_format)
             times = dff["timestamp"].unique()
             dates = dff["date"].unique()
-            fig = get_animation_fig(data, times, dates, tags, date, cage)
+            fig = get_animation_fig(data, times, dates, tags, date, cage, marker["size"])
         else:
-            fig = {"data": data, "layout": layout}
+            fig = go.Figure({"data": data, "layout": layout})
         return fig
 
 

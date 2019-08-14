@@ -53,7 +53,8 @@ def init_databasemanager(positionTags: bool):
         sqlite3.register_adapter(np.uint8, lambda val: int(val))
         if positionTags:
             logger.info(
-                "Including positioning due to '3D: include' set True in metadata"
+                "Will attempt to position incoming tag data "
+                "('3D: include' set True in metadata)."
             )
             pos.init_metadata()
 
