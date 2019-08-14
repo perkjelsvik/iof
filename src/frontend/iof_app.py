@@ -57,7 +57,7 @@ else:
         print("Caught an error while loading db names for backup, exiting.")
         exit()
     else:
-        dbName = dbDict["main_database"]
+        dbName = dbPath + dbDict["main_database"]
 
 # Parameters
 showDiv = {"display": "inline-block"}
