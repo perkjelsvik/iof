@@ -20,4 +20,4 @@ I worked actively the two first weeks of august 2019 on developing iof further. 
 
 After these two weeks, I imagine there will be some updates here and there. But at this point it should be ready to use for other epxeriments with little configuration needed. I have not addressed public hosting of the appplications in any regard, but several guides exists on this aspect of having a web application. The workaround used during development was to allow specific ip-addresses to the machine running the application. Not a good or scalable solution. In any case, it's been fun developing this tool. I now hope the tool has matured enough to be used in future experiments, both commercial and research.
 
-![alt text](https://github.com/PerKjelsvik/iof/tree/master/docs/source/images/webpage.png "Dash iof webpage")
+![alt text](https://raw.githubusercontent.com/PerKjelsvik/iof/master/docs/source/images/webpage.png "Dash iof webpage")
