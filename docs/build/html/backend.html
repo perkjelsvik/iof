@@ -65,14 +65,140 @@ correctly formatted to have backend running correctly. When initing, it will
 automatically build other metadata-files correctly.</p>
 <div class="section" id="top-level-modules">
 <h2>Top-level modules<a class="headerlink" href="#top-level-modules" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="main">
-<h3>main<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-src.backend.main">
+<span id="main"></span><h3>main<a class="headerlink" href="#module-src.backend.main" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.main.init_logging">
+<code class="sig-prename descclassname">src.backend.main.</code><code class="sig-name descname">init_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.main.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.main.main">
+<code class="sig-prename descclassname">src.backend.main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; NoReturn<a class="headerlink" href="#src.backend.main.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that spawns the main MQTT client as a subprocess.
+If the MQTT client terminates for some reason, this function will restart
+the client.</p>
+</dd></dl>
+
 </div>
-<div class="section" id="mqttclient">
-<h3>mqttclient<a class="headerlink" href="#mqttclient" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-src.backend.mqttclient">
+<span id="mqttclient"></span><h3>mqttclient<a class="headerlink" href="#module-src.backend.mqttclient" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.mqttclient.CustomFormatter">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">CustomFormatter</code><span class="sig-paren">(</span><em class="sig-param">fmt=None</em>, <em class="sig-param">datefmt=None</em>, <em class="sig-param">style='%'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.mqttclient.CustomFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging Formatter to have custom format for the different logging levels.</p>
+<dl class="attribute">
+<dt id="src.backend.mqttclient.CustomFormatter.FORMATS">
+<code class="sig-name descname">FORMATS</code><em class="property"> = {20: '{module:11s} - {message}', 'DEFAULT': '[{asctime}] - {name} - [{levelname:8s}] - {message}'}</em><a class="headerlink" href="#src.backend.mqttclient.CustomFormatter.FORMATS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.backend.mqttclient.CustomFormatter.format">
+<code class="sig-name descname">format</code><span class="sig-paren">(</span><em class="sig-param">record</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.mqttclient.CustomFormatter.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format the specified record as text.</p>
+<p>The record’s attribute dictionary is used as the operand to a
+string formatting operation which yields the returned string.
+Before formatting the dictionary, a couple of preparatory steps
+are carried out. The message attribute of the record is computed
+using LogRecord.getMessage(). If the formatting string uses the
+time (as determined by a call to usesTime(), formatTime() is
+called to format the event time. If there is exception information,
+it is formatted using formatException() and appended to the message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.init_logging">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">init_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.init_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.load_iof_mqtt_topics">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">load_iof_mqtt_topics</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[Tuple[str, int]]<a class="headerlink" href="#src.backend.mqttclient.load_iof_mqtt_topics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.main">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; NoReturn<a class="headerlink" href="#src.backend.mqttclient.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.mqtt_client_config">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">mqtt_client_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[str, int, str, str]<a class="headerlink" href="#src.backend.mqttclient.mqtt_client_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_connect">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_connect</code><span class="sig-paren">(</span><em class="sig-param">mqttc</em>, <em class="sig-param">obj</em>, <em class="sig-param">flags</em>, <em class="sig-param">rc</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_disconnect">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_disconnect</code><span class="sig-paren">(</span><em class="sig-param">mqttc</em>, <em class="sig-param">obj</em>, <em class="sig-param">rc</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_disconnect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_log">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_log</code><span class="sig-paren">(</span><em class="sig-param">mqttc</em>, <em class="sig-param">obj</em>, <em class="sig-param">level</em>, <em class="sig-param">string</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_message">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_message</code><span class="sig-paren">(</span><em class="sig-param">mqttc</em>, <em class="sig-param">obj</em>, <em class="sig-param">msg</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_publish">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_publish</code><span class="sig-paren">(</span><em class="sig-param">mqttmessage_handlerc</em>, <em class="sig-param">obj</em>, <em class="sig-param">mid</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_publish" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.on_subscribe">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">on_subscribe</code><span class="sig-paren">(</span><em class="sig-param">mqttc</em>, <em class="sig-param">obj</em>, <em class="sig-param">mid</em>, <em class="sig-param">granted_qos</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.mqttclient.on_subscribe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.mqttclient.unpack_json_payload">
+<code class="sig-prename descclassname">src.backend.mqttclient.</code><code class="sig-name descname">unpack_json_payload</code><span class="sig-paren">(</span><em class="sig-param">payload: bytes</em><span class="sig-paren">)</span> &#x2192; Optional[Mapping[str, Union[str, float]]]<a class="headerlink" href="#src.backend.mqttclient.unpack_json_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="initbackend">
-<h3>initbackend<a class="headerlink" href="#initbackend" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-src.backend.initbackend">
+<span id="initbackend"></span><h3>initbackend<a class="headerlink" href="#module-src.backend.initbackend" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.initbackend.define_mqtt_config">
+<code class="sig-prename descclassname">src.backend.initbackend.</code><code class="sig-name descname">define_mqtt_config</code><span class="sig-paren">(</span><em class="sig-param">client: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.initbackend.define_mqtt_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>prompts user to input ip-address, port, username and password for mqtt
+by calling _mqtt_config_ip_port_usr_pwd().
+Writes result to ‘src/backend/.config/config.toml’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.initbackend.init_iof">
+<code class="sig-prename descclassname">src.backend.initbackend.</code><code class="sig-name descname">init_iof</code><span class="sig-paren">(</span><em class="sig-param">args: List[str]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.initbackend.init_iof" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits databases. If args contain –metadata it will also load in metadata
+if they exist in ‘src/backend/.config/metadata.toml’. If args contain -db argument,
+database names in ‘dbmanager/databases/’ will be named with arguments
+passed in -db.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.initbackend.init_metadata">
+<code class="sig-prename descclassname">src.backend.initbackend.</code><code class="sig-name descname">init_metadata</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.initbackend.init_metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.initbackend.iof_ready">
+<code class="sig-prename descclassname">src.backend.initbackend.</code><code class="sig-name descname">iof_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#src.backend.initbackend.iof_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if ready to run iof backend. Else returns False</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.initbackend.reset_iof">
+<code class="sig-prename descclassname">src.backend.initbackend.</code><code class="sig-name descname">reset_iof</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.initbackend.reset_iof" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 <div class="section" id="message-handling">
@@ -82,17 +208,21 @@ automatically build other metadata-files correctly.</p>
 <dl class="function">
 <dt id="src.backend.msghandler.conversion.convert_packet_payload">
 <code class="sig-prename descclassname">src.backend.msghandler.conversion.</code><code class="sig-name descname">convert_packet_payload</code><span class="sig-paren">(</span><em class="sig-param">packet: Dict[str, Union[int, str, float]]</em><span class="sig-paren">)</span> &#x2192; Dict[str, Union[int, str, float]]<a class="headerlink" href="#src.backend.msghandler.conversion.convert_packet_payload" title="Permalink to this definition">¶</a></dt>
-<dd><p>Iterates through packet datafield and checks whether they are in the
-ConverisonMapping dict.</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line">If a datafield exists, the relevant conversion function is called.</div>
-<div class="line">The functions will either return converted data, or the same raw data,
-but adding new or converted datafields to the packet while executing.</div>
-<div class="line">Datafields not in the ConversionMapping are ignored</div>
-</div>
-</div></blockquote>
-<p>Returns converted packet.</p>
+<dd><p>Converts payload datafields as suitable.</p>
+<p>Iterates through packet datafield and checks whether they are in the
+ConverisonMapping dict of this module. If a datafield exists, the relevant
+conversion function is called. The functions will either return converted
+data, or the same raw data, but with an added or converted datafield in
+the packet data structure. Datafields not in the conversionMapping are
+ignored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>packet</strong> – Dict[str, Union[str, int, float]].</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same packet with modified datafields</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -186,16 +316,12 @@ Returns packet as a dictionary.</p>
 <dd><p>returns table gps create statement, dummy data insertion, and dummy data.
 The dummy data is not constructed correctly, all are equal to -1 for
 clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p>
-<dl>
-<dt>Example where the right types of data is used in gps message:</dt><dd><div class="line-block">
-<div class="line">(1, 754605000, 33, “low battery”, 7.31442, 13.59674, 1.2, “3D-fix”, 22)</div>
-</div>
-</dd>
-</dl>
-<ul class="simple">
-<li><p>DECIMAL(7, 5) and DECIMAL(8, 5) used for latitude and longitude is not supported</p></li>
-</ul>
-<p>in sqlite like other sql solutions. However, the data affinity will be NUMERIC,
+<p>Example where the right types of data is used in gps message:</p>
+<blockquote>
+<div><p>(1, 754605000, 33, “low battery”, 7.31442, 13.59674, 1.2, “3D-fix”, 22)</p>
+</div></blockquote>
+<p>DECIMAL(7, 5) and DECIMAL(8, 5) used for latitude and longitude is not supported
+in sqlite like other sql solutions. However, the data affinity will be NUMERIC,
 and the keyword informs users that these numbers should have fixed-precision set to
 5 decimal places.</p>
 </dd></dl>
@@ -227,22 +353,48 @@ clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p
 <dd><p>returns table tbr create statement, dummy data insertion, and dummy data.
 The dummy data is not constructed correctly, all are equal to -1 for
 clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p>
-<dl>
-<dt>Example where the right types of data is used in gps message:</dt><dd><div class="line-block">
-<div class="line">(1, 33, 754605000, 9.2, 142, 31, 55, 69, “this is a comment”)</div>
-</div>
-</dd>
-</dl>
-<ul class="simple">
-<li><p>DECIMAL(3, 1) used for temperature is not supported in sqlite.</p></li>
-</ul>
-<p>However, the data affinity will be NUMERIC, and the keyword informs users that
+<p>Example where the right types of data is used in gps message:</p>
+<blockquote>
+<div><p>(1, 33, 754605000, 9.2, 142, 31, 55, 69, “this is a comment”)</p>
+</div></blockquote>
+<p>DECIMAL(3, 1) used for temperature is not supported in sqlite.
+However, the data affinity will be NUMERIC, and the keyword informs users that
 these numbers should have fixed-precision set to 1 decimal places.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="dbinit">
-<h3>dbinit<a class="headerlink" href="#dbinit" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-src.backend.dbmanager.dbinit">
+<span id="dbinit"></span><h3>dbinit<a class="headerlink" href="#module-src.backend.dbmanager.dbinit" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.dbmanager.dbinit.check_if_reset_of_iof_wanted">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbinit.</code><code class="sig-name descname">check_if_reset_of_iof_wanted</code><span class="sig-paren">(</span><em class="sig-param">dbName: str</em>, <em class="sig-param">dbBackupName: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#src.backend.dbmanager.dbinit.check_if_reset_of_iof_wanted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if new database names match old ones, if they do, prompts user to delete old
+databases. Also checks if old dbDict has different names for databases and prompts
+user to delete these as well if so.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbinit.databases_ready">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbinit.</code><code class="sig-name descname">databases_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#src.backend.dbmanager.dbinit.databases_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if both main and bakup database exists, and return True if they do</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbinit.init_databases">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbinit.</code><code class="sig-name descname">init_databases</code><span class="sig-paren">(</span><em class="sig-param">dbName: str</em>, <em class="sig-param">dbBackupName: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.dbmanager.dbinit.init_databases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates main_database and backup_database in ‘dbmanager/databases/’.
+dbName is name of main_database, dbBackupName is name of backup_database.
+The names will also be saved to ‘src/backend/.config/db_names.toml’.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbinit.reset_databases">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbinit.</code><code class="sig-name descname">reset_databases</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.dbmanager.dbinit.reset_databases" title="Permalink to this definition">¶</a></dt>
+<dd><p>resets package by deleting databases in ‘dbmanager/datbases/’ and by
+resetting ‘src/backend/.config/db_names.toml’. Should be called when –reset
+argument called with main.py</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-src.backend.dbmanager.dbmanager">
 <span id="dbmanager"></span><h3>dbmanager<a class="headerlink" href="#module-src.backend.dbmanager.dbmanager" title="Permalink to this headline">¶</a></h3>
@@ -659,9 +811,9 @@ If not, None is returned.</p>
 <li class="toctree-l1"><a class="reference internal" href="information.html">Information</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Backend</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#top-level-modules">Top-level modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#main">main</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mqttclient">mqttclient</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#initbackend">initbackend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.main">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.mqttclient">mqttclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.initbackend">initbackend</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#message-handling">Message handling</a><ul>
@@ -673,7 +825,7 @@ If not, None is returned.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#databasemanager">Databasemanager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbformat">dbformat</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#dbinit">dbinit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbinit">dbinit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbmanager">dbmanager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgbackup">msgbackup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgconversion">msgconversion</a></li>

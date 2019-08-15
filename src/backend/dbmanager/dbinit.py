@@ -11,6 +11,10 @@ from src.backend.dbmanager import dbmanager
 from src.backend.dbmanager import dbformat
 
 
+# workaround for sphinx
+if os.getcwd()[-5:] == "/docs":
+    os.chdir("../")
+
 # create logger with 'init_backend' and with level DEBUG
 logger = logging.getLogger("main.dbmanager.databaseinit")
 

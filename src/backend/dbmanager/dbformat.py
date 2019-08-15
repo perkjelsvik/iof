@@ -47,12 +47,14 @@ def sql_query_gps_create_table_dummy() -> TableDummySQL:
     clarity. Message_id = -1 also ensures that first message_id will be set to 0.
 
     Example where the right types of data is used in gps message:
-        | (1, 754605000, 33, "low battery", 7.31442, 13.59674, 1.2, "3D-fix", 22)
+    
+        (1, 754605000, 33, "low battery", 7.31442, 13.59674, 1.2, "3D-fix", 22)
 
-    * DECIMAL(7, 5) and DECIMAL(8, 5) used for latitude and longitude is not supported
+    DECIMAL(7, 5) and DECIMAL(8, 5) used for latitude and longitude is not supported
     in sqlite like other sql solutions. However, the data affinity will be NUMERIC,
     and the keyword informs users that these numbers should have fixed-precision set to
     5 decimal places.
+
     """
     query = """
         CREATE TABLE IF NOT EXISTS gps (
@@ -123,11 +125,13 @@ def sql_query_tbr_create_table_dummy() -> TableDummySQL:
     clarity. Message_id = -1 also ensures that first message_id will be set to 0.
 
     Example where the right types of data is used in gps message:
-        | (1, 33, 754605000, 9.2, 142, 31, 55, 69, "this is a comment")
+        
+        (1, 33, 754605000, 9.2, 142, 31, 55, 69, "this is a comment")
 
-    * DECIMAL(3, 1) used for temperature is not supported in sqlite.
+    DECIMAL(3, 1) used for temperature is not supported in sqlite.
     However, the data affinity will be NUMERIC, and the keyword informs users that
     these numbers should have fixed-precision set to 1 decimal places.
+
     """
     query = """
         CREATE TABLE IF NOT EXISTS tbr (

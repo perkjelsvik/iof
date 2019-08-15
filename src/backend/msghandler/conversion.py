@@ -180,14 +180,20 @@ _conversion_functions: ConversionMapping = {
 
 
 def convert_packet_payload(packet: Packet) -> Packet:
-    """
+    """Converts payload datafields as suitable.
+
     Iterates through packet datafield and checks whether they are in the
-    ConverisonMapping dict.
-        | If a datafield exists, the relevant conversion function is called.
-        | The functions will either return converted data, or the same raw data,
-            but adding new or converted datafields to the packet while executing.
-        | Datafields not in the ConversionMapping are ignored
-    Returns converted packet.
+    ConverisonMapping dict of this module. If a datafield exists, the relevant
+    conversion function is called. The functions will either return converted
+    data, or the same raw data, but with an added or converted datafield in
+    the packet data structure. Datafields not in the conversionMapping are
+    ignored
+
+    Args:
+        packet: Dict[str, Union[str, int, float]].
+
+    Returns:
+        The same packet with modified datafields
     """
     logger.info(f"|{'---'*2} Converting packet data")
     for datafield in dict(packet):
