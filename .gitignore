@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+#build/  # temporarily disabled to include build/ folder from docs - is there a better way?
 develop-eggs/
 dist/
 downloads/
