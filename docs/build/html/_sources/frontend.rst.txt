@@ -1,10 +1,52 @@
-Frontend
-========
+Frontend documentation
+======================
 
-Here is the documentation for frontend code
+This documentation is not complete at all. This is also because the state of the Dash application
+is quite poor in terms of documentation. But for reference, the same guide given in the 
+setup of new iof projects is given below.
 
-Callbacks
-^^^^^^^^^^^^^^^^
+Due to the way the Dash app is structured, the code must be run from 
+inside the :code:`src/frontend/` folder. Navigate there, and for first-time
+setup, run
 
-And here is the documentation for the message handling modules
+.. code-block::
 
+    python initfrontend.py
+
+This will only work if backend has already been correctly initalized. If so,
+the metadata for the current project will be converted to a frontend-compatible
+file. It will then prompt you to add at least one username/password pair:
+
+.. code-block::
+
+    python initfrontend.py
+    Done converting backend metadata to frontend metadata
+    At least one username/password pair is needed for authentication.
+    It will be stored next to the dash app in a toml file in plain text.
+    username: dev
+    password: pass
+    Do you wish to add another username/password pair? [y/n]: n
+    Successfully added username/password pair(s) to file! can now authenticate in Dash app.
+
+You are now ready to run the Dah app. To run, simply run
+
+.. code-block::
+
+    python iof_app.py
+
+and then go visit https://127.0.0.1:8050 in your web browser. This should load the 
+iof Dash app, polling data from the main database located in :code:`src/backend/dbmanager/databases/`,
+and using metadata to provide filtering options in the app.
+
+The app is essentially a Flask app. Look up how to host Flask apps on webservers / other solutions for 
+ways to make the app publicly available. The code you would have to change is the very last line of code
+in :code:`iof_app.py`. Use the username/password combination
+you provided in the initalization.
+
+
+Structure
+^^^^^^^^^
+
+The website has controls on the left-hand side to switch between tag, tbr, and position data. If 
+positioning is not included in the project metadata, the option to view the positioning data is
+removed, along with the filters and options that come with it. 

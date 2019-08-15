@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to the iof (Internet of Fish) documentation!
-===============================
+====================================================
 
 .. figure:: images/icon_dark.png
     :width: 250pt
@@ -19,6 +19,7 @@ Table of contents
    :maxdepth: 3
    
    information
+   quick_setup
    backend
    frontend
 

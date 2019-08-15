@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Backend documentation &mdash; iof 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Frontend documentation" href="frontend.html" />
+    <link rel="prev" title="Setup for new iof projects" href="quick_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> iof
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="information.html">Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_setup.html">Setup for new <code class="code docutils literal notranslate"><span class="pre">iof</span></code> projects</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Backend documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#top-level-modules">Top-level modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#main">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mqttclient">mqttclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initbackend">initbackend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#message-handling">Message handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.conversion">conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.msghandler">msghandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.packet">packet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.protocol">protocol</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#databasemanager">Databasemanager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbformat">dbformat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dbinit">dbinit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbmanager">dbmanager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgbackup">msgbackup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgconversion">msgconversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.positioning">positioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.tdoa">tdoa</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">Frontend documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">iof</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Backend documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/backend.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="backend-documentation">
+<h1>Backend documentation<a class="headerlink" href="#backend-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Here is the documentation for Backend code. The documentation is not complete, and is
+automatically generated using the <code class="code docutils literal notranslate"><span class="pre">sphinx</span></code> python package, meaning there can be
+weird formatting in places, since not all documentation is strictly adhering to a specfic
+documentation style. To run backend after doing first time  initialization, you simply run
+(from root folder) the below command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span>
+</pre></div>
+</div>
+<p>This will spawn an instance of <code class="code docutils literal notranslate"><span class="pre">src.backend.mqttclient</span></code> using the configurations
+of the project.</p>
+<p>For first time initialization, you want to place a <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code> file in the root
+location that is configured according to the attached <code class="code docutils literal notranslate"><span class="pre">metadata_example.xlsx</span></code>. Once
+that is in place, you can initalize backend as so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python -m src.backend.main -i
+[...] Do you wish to convert metadata from an excel (xlsx) file? [y/n]: y
+Please input ip-address: 127.0.0.1
+and port number: 1883
+username: mqttuser
+Password: mqttpassword
+</pre></div>
+</div>
+<p>You will be prompted to fill in <code class="code docutils literal notranslate"><span class="pre">mqtt</span></code> broker information. After the information has
+been filled out <code class="code docutils literal notranslate"><span class="pre">src.backend.main</span></code> will attempt to spawn <code class="code docutils literal notranslate"><span class="pre">src.backend.mqttclient</span></code>
+as a subprocess. Whenever it crashes it will attempt to respawn the process. That means that
+if the mqqt-client is unable to connect to the broker, it will keep respawning the client.
+If this is the case, kill the process, and then run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">backend.src.main</span></code> again
+with the <code class="code docutils literal notranslate"><span class="pre">-i</span></code> flag, or both the <code class="code docutils literal notranslate"><span class="pre">-i</span></code> and <code class="code docutils literal notranslate"><span class="pre">-r</span></code> flag. You will be
+prompted to fill out the MQTT broker configuration again. Alternatively, you can edit the
+MQTT configuration directly inside <code class="code docutils literal notranslate"><span class="pre">src/backend/.config/config.toml</span></code>.</p>
+<p>To see all arguments that <code class="code docutils literal notranslate"><span class="pre">src.backend.main</span></code> supports, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>Again, make sure to have an excel file in the root location that is named <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code>.
+Otherwise, the init cannot convert the project metadata to its own internal metadata files.
+Without them, frontend cannot work, and features of backend will not work either, such as raw
+data conversion and positioning.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/backend_flow.png"><img alt="Backend MQTT client logic flow" src="_images/backend_flow.png" style="width: 100%;" /></a>
+</div>
+<div class="section" id="top-level-modules">
+<h2>Top-level modules<a class="headerlink" href="#top-level-modules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="main">
+<h3>main<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="mqttclient">
+<h3>mqttclient<a class="headerlink" href="#mqttclient" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="initbackend">
+<h3>initbackend<a class="headerlink" href="#initbackend" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="message-handling">
+<h2>Message handling<a class="headerlink" href="#message-handling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-src.backend.msghandler.conversion">
+<span id="conversion"></span><h3>conversion<a class="headerlink" href="#module-src.backend.msghandler.conversion" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.msghandler.conversion.convert_packet_payload">
+<code class="sig-prename descclassname">src.backend.msghandler.conversion.</code><code class="sig-name descname">convert_packet_payload</code><span class="sig-paren">(</span><em class="sig-param">packet: Dict[str, Union[int, str, float]]</em><span class="sig-paren">)</span> &#x2192; Dict[str, Union[int, str, float]]<a class="headerlink" href="#src.backend.msghandler.conversion.convert_packet_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts payload datafields as suitable.</p>
+<p>Iterates through packet datafield and checks whether they are in the
+ConverisonMapping dict of this module. If a datafield exists, the relevant
+conversion function is called. The functions will either return converted
+data, or the same raw data, but with an added or converted datafield in
+the packet data structure. Datafields not in the conversionMapping are
+ignored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>packet</strong> – Dict[str, Union[str, int, float]].</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same packet with modified datafields</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.msghandler.msghandler">
+<span id="msghandler"></span><h3>msghandler<a class="headerlink" href="#module-src.backend.msghandler.msghandler" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.msghandler.msghandler.Message">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.msghandler.msghandler.</code><code class="sig-name descname">Message</code><span class="sig-paren">(</span><em class="sig-param">header: Dict[str, Union[int, str, float]], payload: List[Dict[str, Union[int, str, float]]]</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.msghandler.msghandler.Message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="src.backend.msghandler.msghandler.MessageHandlingError">
+<em class="property">exception </em><code class="sig-prename descclassname">src.backend.msghandler.msghandler.</code><code class="sig-name descname">MessageHandlingError</code><a class="headerlink" href="#src.backend.msghandler.msghandler.MessageHandlingError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.msghandler.msghandler.handle_message">
+<code class="sig-prename descclassname">src.backend.msghandler.msghandler.</code><code class="sig-name descname">handle_message</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em><span class="sig-paren">)</span> &#x2192; src.backend.msghandler.msghandler.Message<a class="headerlink" href="#src.backend.msghandler.msghandler.handle_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return unpacked and converted internetoffish message as a dictonary with msg header
+and payload as list data. Adds tbr_serial_id and correct timestamp to each packet,
+and sets gps data as a packet in payload rather than header.
+Takes bytes data as input, formatted according to protocol used in SLIM hardware.
+Each packet is handled so that data is converted or changed appropriately (commCode
+3 becomes ‘S256’ f. ex. and tag_data with conversion factor is handled etc.)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.msghandler.packet">
+<span id="packet"></span><h3>packet<a class="headerlink" href="#module-src.backend.msghandler.packet" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.msghandler.packet.get_packet_length_type_and_format">
+<code class="sig-prename descclassname">src.backend.msghandler.packet.</code><code class="sig-name descname">get_packet_length_type_and_format</code><span class="sig-paren">(</span><em class="sig-param">code: int</em><span class="sig-paren">)</span> &#x2192; Tuple[int, str, List[src.backend.msghandler.protocol.PacketSlice]]<a class="headerlink" href="#src.backend.msghandler.packet.get_packet_length_type_and_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns packet length and unpacking format based on code. If code is 255, packet is
+a TBR sensor msg. If code is a (valid) key in msghandler.protocol codetypes
+dictionary, get associated communication protocol and insert unpacking format for
+this communication protocol in packet unpacking format.
+Unpacking formats defined in msghandler.protocol.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.msghandler.packet.mask">
+<code class="sig-prename descclassname">src.backend.msghandler.packet.</code><code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">lenData</em>, <em class="sig-param">bits</em>, <em class="sig-param">MSB</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.msghandler.packet.mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.msghandler.packet.unpack_packet">
+<code class="sig-prename descclassname">src.backend.msghandler.packet.</code><code class="sig-name descname">unpack_packet</code><span class="sig-paren">(</span><em class="sig-param">packetData: bytes, format: List[src.backend.msghandler.protocol.PacketSlice]</em><span class="sig-paren">)</span> &#x2192; Mapping[str, int]<a class="headerlink" href="#src.backend.msghandler.packet.unpack_packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpacks bytes msg packet using format defined in msghandler.protocol.
+Iterates trough each segment of a message and unpacks the datafields contained
+inside. A segment consists of complete byte datafields and/or datafields of bits.
+Returns packet as a dictionary.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.msghandler.protocol">
+<span id="protocol"></span><h3>protocol<a class="headerlink" href="#module-src.backend.msghandler.protocol" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.msghandler.protocol.DataField">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.msghandler.protocol.</code><code class="sig-name descname">DataField</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">length: int</em>, <em class="sig-param">bits: Union[int</em>, <em class="sig-param">NoneType] = None</em>, <em class="sig-param">MSB: Union[bool</em>, <em class="sig-param">NoneType] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.msghandler.protocol.DataField" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="src.backend.msghandler.protocol.DataField.MSB">
+<code class="sig-name descname">MSB</code><em class="property"> = None</em><a class="headerlink" href="#src.backend.msghandler.protocol.DataField.MSB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.msghandler.protocol.DataField.bits">
+<code class="sig-name descname">bits</code><em class="property"> = None</em><a class="headerlink" href="#src.backend.msghandler.protocol.DataField.bits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="src.backend.msghandler.protocol.PacketSlice">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.msghandler.protocol.</code><code class="sig-name descname">PacketSlice</code><span class="sig-paren">(</span><em class="sig-param">numBytes: int, datafields: List[src.backend.msghandler.protocol.DataField]</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.msghandler.protocol.PacketSlice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.msghandler.protocol.PacketType">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.msghandler.protocol.</code><code class="sig-name descname">PacketType</code><span class="sig-paren">(</span><em class="sig-param">type: str, format: List[src.backend.msghandler.protocol.PacketSlice]</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.msghandler.protocol.PacketType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="databasemanager">
+<h2>Databasemanager<a class="headerlink" href="#databasemanager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-src.backend.dbmanager.dbformat">
+<span id="dbformat"></span><h3>dbformat<a class="headerlink" href="#module-src.backend.dbmanager.dbformat" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.dbmanager.dbformat.sql_query_gps_create_table_dummy">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbformat.</code><code class="sig-name descname">sql_query_gps_create_table_dummy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[str, str, Tuple[Union[int, str]]]<a class="headerlink" href="#src.backend.dbmanager.dbformat.sql_query_gps_create_table_dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns table gps create statement, dummy data insertion, and dummy data.
+The dummy data is not constructed correctly, all are equal to -1 for
+clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p>
+<p>Example where the right types of data is used in gps message:</p>
+<blockquote>
+<div><p>(1, 754605000, 33, “low battery”, 7.31442, 13.59674, 1.2, “3D-fix”, 22)</p>
+</div></blockquote>
+<p>DECIMAL(7, 5) and DECIMAL(8, 5) used for latitude and longitude is not supported
+in sqlite like other sql solutions. However, the data affinity will be NUMERIC,
+and the keyword informs users that these numbers should have fixed-precision set to
+5 decimal places.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbformat.sql_query_metadata_create_table">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbformat.</code><code class="sig-name descname">sql_query_metadata_create_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#src.backend.dbmanager.dbformat.sql_query_metadata_create_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns table metadata create statement.
+See src/backend/.config/metadata.toml for relevant construction/format of metadata.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbformat.sql_query_tag_create_table_dummy">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbformat.</code><code class="sig-name descname">sql_query_tag_create_table_dummy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[str, str, Tuple[Union[int, str]]]<a class="headerlink" href="#src.backend.dbmanager.dbformat.sql_query_tag_create_table_dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns table tage create statement, dummy data insertion, and dummy data.
+The dummy data is not constructed correctly, all are equal to -1 for
+clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p>
+<dl>
+<dt>Example where the right types of data is used in gps message:</dt><dd><div class="line-block">
+<div class="line">(1, 33, 754605000, “S256”, 69, 88, 6.2, 31, 17, 330)</div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.dbformat.sql_query_tbr_create_table_dummy">
+<code class="sig-prename descclassname">src.backend.dbmanager.dbformat.</code><code class="sig-name descname">sql_query_tbr_create_table_dummy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[str, str, Tuple[Union[int, str]]]<a class="headerlink" href="#src.backend.dbmanager.dbformat.sql_query_tbr_create_table_dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns table tbr create statement, dummy data insertion, and dummy data.
+The dummy data is not constructed correctly, all are equal to -1 for
+clarity. Message_id = -1 also ensures that first message_id will be set to 0.</p>
+<p>Example where the right types of data is used in gps message:</p>
+<blockquote>
+<div><p>(1, 33, 754605000, 9.2, 142, 31, 55, 69, “this is a comment”)</p>
+</div></blockquote>
+<p>DECIMAL(3, 1) used for temperature is not supported in sqlite.
+However, the data affinity will be NUMERIC, and the keyword informs users that
+these numbers should have fixed-precision set to 1 decimal places.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="dbinit">
+<h3>dbinit<a class="headerlink" href="#dbinit" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="module-src.backend.dbmanager.dbmanager">
+<span id="dbmanager"></span><h3>dbmanager<a class="headerlink" href="#module-src.backend.dbmanager.dbmanager" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="module-src.backend.dbmanager.msgbackup">
+<span id="msgbackup"></span><h3>msgbackup<a class="headerlink" href="#module-src.backend.dbmanager.msgbackup" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="src.backend.dbmanager.msgbackup.store_message_to_backup_db">
+<code class="sig-prename descclassname">src.backend.dbmanager.msgbackup.</code><code class="sig-name descname">store_message_to_backup_db</code><span class="sig-paren">(</span><em class="sig-param">msg: Mapping[str, Union[str, float]], msgID: Optional[int] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#src.backend.dbmanager.msgbackup.store_message_to_backup_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores raw bytearray message as hex in backup database</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.dbmanager.msgconversion">
+<span id="msgconversion"></span><h3>msgconversion<a class="headerlink" href="#module-src.backend.dbmanager.msgconversion" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.dbmanager.msgconversion.DatabasePacket">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.msgconversion.</code><code class="sig-name descname">DatabasePacket</code><span class="sig-paren">(</span><em class="sig-param">table: str, columns: Tuple[str], values: Tuple[Union[int, str, float]], numOfValues: int = 0, sql_columns: str = '', sql_values: str = ''</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.msgconversion.DatabasePacket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.dbmanager.positioning">
+<span id="positioning"></span><h3>positioning<a class="headerlink" href="#module-src.backend.dbmanager.positioning" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.CageCircle">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">CageCircle</code><span class="sig-paren">(</span><em class="sig-param">center: src.backend.dbmanager.tdoa.Point</em>, <em class="sig-param">radius: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.CageCircle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.CageGeometry">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">CageGeometry</code><span class="sig-paren">(</span><em class="sig-param">circle: 'CageCircle'</em>, <em class="sig-param">lat_A: 'float'</em>, <em class="sig-param">lat_B: 'float'</em>, <em class="sig-param">lat_C: 'float'</em>, <em class="sig-param">lon_A: 'float'</em>, <em class="sig-param">lon_B: 'float'</em>, <em class="sig-param">lon_C: 'float'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.CageGeometry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.CageMeta">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">CageMeta</code><span class="sig-paren">(</span><em class="sig-param">cageName: 'str'</em>, <em class="sig-param">tbr: 'List[ListTBR]'</em>, <em class="sig-param">depth: 'float'</em>, <em class="sig-param">geometry: 'Optional[CageGeometry]'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.CageMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.Point">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">Point</code><span class="sig-paren">(</span><em class="sig-param">x: float</em>, <em class="sig-param">y: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.Point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.Position">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">Position</code><span class="sig-paren">(</span><em class="sig-param">timestamp: 'int'</em>, <em class="sig-param">tag_id: 'int'</em>, <em class="sig-param">frequency: 'int'</em>, <em class="sig-param">cage_name: 'str'</em>, <em class="sig-param">millisecond: 'int'</em>, <em class="sig-param">x: 'float'</em>, <em class="sig-param">y: 'float'</em>, <em class="sig-param">z: 'float'</em>, <em class="sig-param">latitude: 'float'</em>, <em class="sig-param">longitude: 'float'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.Position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.positioning.TagsMeta">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">TagsMeta</code><span class="sig-paren">(</span><em class="sig-param">tag_id: 'int'</em>, <em class="sig-param">frequency: 'int'</em>, <em class="sig-param">cageName: 'str'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.TagsMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.positioning.circleFromThreePoints">
+<code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">circleFromThreePoints</code><span class="sig-paren">(</span><em class="sig-param">P0: src.backend.dbmanager.positioning.Point</em>, <em class="sig-param">P1: src.backend.dbmanager.positioning.Point</em>, <em class="sig-param">P2: src.backend.dbmanager.positioning.Point</em><span class="sig-paren">)</span> &#x2192; src.backend.dbmanager.positioning.CageCircle<a class="headerlink" href="#src.backend.dbmanager.positioning.circleFromThreePoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds and returns minimal circle (center, radius) based on three xy-points.</p>
+<p>Function derived from:
+| <a class="reference external" href="https://www.xarg.org/2018/02/create-a-circle-out-of-three-points/">https://www.xarg.org/2018/02/create-a-circle-out-of-three-points/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P0</strong> – Point 0</p></li>
+<li><p><strong>P1</strong> – Point 1</p></li>
+<li><p><strong>P2</strong> – Point 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of dataclass ‘Circle’ with center and radius attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.positioning.init_metadata">
+<code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">init_metadata</code><span class="sig-paren">(</span><em class="sig-param">old=False</em><span class="sig-paren">)</span> &#x2192; Optional[Tuple[Dict[str, List[List[int]]], List[src.backend.dbmanager.positioning.TagsMeta]]]<a class="headerlink" href="#src.backend.dbmanager.positioning.init_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads positoning metadata from .toml file if it exists.</p>
+<p>Loads metadata from toml-file into dictonary, and if successful, iterates through
+said metadata. For cages metadata, it creates an instance of CageMeta for each
+cage, and for tags metdata, it creates an instance of TagsMeta for each depth tag.
+These instances are added to lists ‘cages’ and ‘depth_tags’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns a tuple of two lists, where the first list contains multiple instances
+of CageMeta, and the second contains multiple instances of TagsMeta.
+If metadata cannot be loaded for some reason, the function returns None.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – NB! No metadata position config file found.
+    Can’t do positioning.</p></li>
+<li><p><strong>Exception</strong> – Caught an error while loading metadata positioning</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.positioning.position_database">
+<code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">position_database</code><span class="sig-paren">(</span><em class="sig-param">dbObj: Any</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.positioning.position_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches through complete database and returns all found positions as a list.</p>
+<p>Goes through all valid tag_id/frequency combinations for a given project and find
+triplets of them in the database, and uses this as well as station data to position
+all tag messages from all messages. Returns a list of found positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dbObj</strong> – dbmanager.DatabaseManager instance, with connection to main database.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all found positions, where each position is an instance of dataclass
+‘Position’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.positioning.position_new_msg">
+<code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">position_new_msg</code><span class="sig-paren">(</span><em class="sig-param">msg: msghandler.Message</em>, <em class="sig-param">dbObj: DatabaseManager</em><span class="sig-paren">)</span> &#x2192; Optional[List[tdoa.CoordXYZ]]<a class="headerlink" href="#src.backend.dbmanager.positioning.position_new_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return list of xyz-position of new msg if triplets of tag detections exists.</p>
+<p>Iterates through msg and checks whether two other messages from the same tag_id with
+matching cage TBR IDs exists in database. If so, runs positoning algorithm on tag
+detection triplet, and returns a list of the positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – Dictionary following msghandler.Message format, where a string is used for
+each key, with corresponding values being of type Union[int, str, float].</p></li>
+<li><p><strong>dbObj</strong> – dbmanager.DatabaseManager instance, with open connection to database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If any positions has been found for tags in message, returns a list of the
+positions. If no positions has been found, returns None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.positioning.position_tag">
+<code class="sig-prename descclassname">src.backend.dbmanager.positioning.</code><code class="sig-name descname">position_tag</code><span class="sig-paren">(</span><em class="sig-param">cage: src.backend.dbmanager.positioning.CageMeta</em>, <em class="sig-param">stations: src.backend.dbmanager.tdoa.StationData</em>, <em class="sig-param">tag_depth: float</em>, <em class="sig-param">tstamps: src.backend.dbmanager.tdoa.Timestamps</em>, <em class="sig-param">cageVerify: bool = True</em><span class="sig-paren">)</span> &#x2192; Optional[src.backend.dbmanager.tdoa.CoordXYZ]<a class="headerlink" href="#src.backend.dbmanager.positioning.position_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attemtps to position and resolve tag positions, returns CoordXYZ if successful.</p>
+<p>Uses station data, cage information, and tag data to call TDOA hyperbola based
+positioning. If successful, attempts to resolve ambiguity of position candidates
+by viewing distance from stations to candidates, and order of arrival. In addition,
+if enabled, tries to validate position based on distance from cage center.
+Returns CoordXYZ(x, y, z) of tag if successful, else returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cage</strong> – Instance of CageMeta, used to filter based on cage center.</p></li>
+<li><p><strong>stations</strong> – Instance of StationData, containing positions of stations, depth of
+stations etc. Used in TDOA algorithm, and for arrival-resolvement.</p></li>
+<li><p><strong>tag_depth</strong> – depth of tag. Stations depth is subtracted from tag_depth in TDOA.</p></li>
+<li><p><strong>tstamps</strong> – Instance of dataclass Timestamps, containing second and millisecond
+values for arrival of message in station A, B and C.</p></li>
+<li><p><strong>cageVerify</strong> – Boolean argument to enable validation based on distance from cage
+center. By default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If valid position candidates are found from TDOA algorithm, resolvement and
+validation is performed. If position is successfully found, it is returned,
+otherwise None is returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.backend.dbmanager.tdoa">
+<span id="tdoa"></span><h3>tdoa<a class="headerlink" href="#module-src.backend.dbmanager.tdoa" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.Circle">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">Circle</code><span class="sig-paren">(</span><em class="sig-param">center: src.backend.dbmanager.tdoa.Point</em>, <em class="sig-param">radius: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.Circle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.CoordUTM">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">CoordUTM</code><span class="sig-paren">(</span><em class="sig-param">easting: float</em>, <em class="sig-param">northing: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.CoordUTM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.CoordXYZ">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">CoordXYZ</code><span class="sig-paren">(</span><em class="sig-param">x: float</em>, <em class="sig-param">y: float</em>, <em class="sig-param">z: float</em>, <em class="sig-param">unit: str = 'm'</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.CoordXYZ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.LatLong">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">LatLong</code><span class="sig-paren">(</span><em class="sig-param">lat: float</em>, <em class="sig-param">lon: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.LatLong" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.Point">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">Point</code><span class="sig-paren">(</span><em class="sig-param">x: float</em>, <em class="sig-param">y: float</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.Point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.StationData">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">StationData</code><span class="sig-paren">(</span><em class="sig-param">TBR_A: int</em>, <em class="sig-param">TBR_B: int</em>, <em class="sig-param">TBR_C: int</em>, <em class="sig-param">pos_A: src.backend.dbmanager.tdoa.LatLong</em>, <em class="sig-param">pos_B: src.backend.dbmanager.tdoa.LatLong</em>, <em class="sig-param">pos_C: src.backend.dbmanager.tdoa.LatLong</em>, <em class="sig-param">depth: float</em>, <em class="sig-param">theta: float = 0</em>, <em class="sig-param">utm_zone_num: int = 0</em>, <em class="sig-param">utm_zone_let: str = ''</em>, <em class="sig-param">utm_A: src.backend.dbmanager.tdoa.CoordUTM = CoordUTM(easting=0</em>, <em class="sig-param">northing=0)</em>, <em class="sig-param">utm_B: src.backend.dbmanager.tdoa.CoordUTM = CoordUTM(easting=0</em>, <em class="sig-param">northing=0)</em>, <em class="sig-param">utm_C: src.backend.dbmanager.tdoa.CoordUTM = CoordUTM(easting=0</em>, <em class="sig-param">northing=0)</em>, <em class="sig-param">xyz_A: src.backend.dbmanager.tdoa.CoordXYZ = CoordXYZ(x=0.0</em>, <em class="sig-param">y=0.0</em>, <em class="sig-param">z=0.0</em>, <em class="sig-param">unit='m')</em>, <em class="sig-param">xyz_B: src.backend.dbmanager.tdoa.CoordXYZ = CoordXYZ(x=0.0</em>, <em class="sig-param">y=0.0</em>, <em class="sig-param">z=0.0</em>, <em class="sig-param">unit='m')</em>, <em class="sig-param">xyz_C: src.backend.dbmanager.tdoa.CoordXYZ = CoordXYZ(x=0.0</em>, <em class="sig-param">y=0.0</em>, <em class="sig-param">z=0.0</em>, <em class="sig-param">unit='m')</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>StationData class used for positioning.</p>
+<p>StationData is used to construct and filter data on a valid form to then try and
+perform positioning based on the stationdata and other data provided. It is also
+used to convert between UTM, latlong and local XYZ-cartesian coordinate system.
+And it is used in verification of position candidates (station positions).</p>
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.TBR_i">
+<code class="sig-name descname">TBR_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.TBR_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer ID of stations (where i = A, B, C).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.pos_i">
+<code class="sig-name descname">pos_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.pos_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>LatLong position of stations (where i = A, B, C).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.depth">
+<code class="sig-name descname">depth</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shared depth of stations</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.theta">
+<code class="sig-name descname">theta</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.theta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Angle to rotate back from local xyz-system to UTM.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.utm_zone_num">
+<code class="sig-name descname">utm_zone_num</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.utm_zone_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer used in conversion from utm to latlong.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.utm_zone_let">
+<code class="sig-name descname">utm_zone_let</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.utm_zone_let" title="Permalink to this definition">¶</a></dt>
+<dd><p>String used in conversion from utm to latlong.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.utm_i">
+<code class="sig-name descname">utm_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.utm_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>UTM Northing and Easting of stations (where i = A, B, C).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.StationData.xyz_i">
+<code class="sig-name descname">xyz_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.StationData.xyz_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>XYZ-coordinates of stations (where i = A, B, C).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="src.backend.dbmanager.tdoa.Timestamps">
+<em class="property">class </em><code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">Timestamps</code><span class="sig-paren">(</span><em class="sig-param">sec_a: int</em>, <em class="sig-param">sec_b: int</em>, <em class="sig-param">sec_c: int</em>, <em class="sig-param">msec_a: int</em>, <em class="sig-param">msec_b: int</em>, <em class="sig-param">msec_c: int</em><span class="sig-paren">)</span><a class="headerlink" href="#src.backend.dbmanager.tdoa.Timestamps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timestamps class used for positioning.</p>
+<p>Timestamps is used solve TDOA hyperbola positoning, where its attributes represent
+time of arrival for each station.</p>
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.Timestamps.sec_i">
+<code class="sig-name descname">sec_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.Timestamps.sec_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer UTC timestamp (seconds) Time of Arrival (where i = A, B, C).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.backend.dbmanager.tdoa.Timestamps.msec_i">
+<code class="sig-name descname">msec_i</code><a class="headerlink" href="#src.backend.dbmanager.tdoa.Timestamps.msec_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer millisecond Time of Arrival (where i = A, B, C).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.tdoa.convert_tag_xyz_to_latlong">
+<code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">convert_tag_xyz_to_latlong</code><span class="sig-paren">(</span><em class="sig-param">pos: src.backend.dbmanager.tdoa.CoordXYZ</em>, <em class="sig-param">station_data: src.backend.dbmanager.tdoa.StationData</em><span class="sig-paren">)</span> &#x2192; src.backend.dbmanager.tdoa.LatLong<a class="headerlink" href="#src.backend.dbmanager.tdoa.convert_tag_xyz_to_latlong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple function to rotate tag xyz back to utm and convert this to latlong.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> – XYZ-position of tag.</p></li>
+<li><p><strong>station_data</strong> – Instance of dataclass StationData, containing attributes:
+‘theta’: used to rotate back to utm.
+‘utm_A.easting’ &amp; ‘utm_A.northing’: used to translate back to utm.
+‘utm_zone_num’ &amp; ‘utm_zone_letter’: used to convert utm to latlong.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns instance of dataclass LatLong with latitude and longitude values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.tdoa.distance_xy">
+<code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">distance_xy</code><span class="sig-paren">(</span><em class="sig-param">P0: Union[src.backend.dbmanager.tdoa.CoordXYZ, src.backend.dbmanager.tdoa.Point], P1: Union[src.backend.dbmanager.tdoa.CoordXYZ, src.backend.dbmanager.tdoa.Point]</em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#src.backend.dbmanager.tdoa.distance_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds and returns the distance between two points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P0</strong> – Can be either dataclass Point or CoordXYZ (both have x and y attributes)</p></li>
+<li><p><strong>P1</strong> – P0: Can be either dataclass Point or CoordXYZ (both have x and y attributes)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns the found distance as a float.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.tdoa.resolve_position_based_on_order_of_arrival">
+<code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">resolve_position_based_on_order_of_arrival</code><span class="sig-paren">(</span><em class="sig-param">tstamps: src.backend.dbmanager.tdoa.Timestamps</em>, <em class="sig-param">station_data: src.backend.dbmanager.tdoa.StationData</em>, <em class="sig-param">positions: numpy.array</em><span class="sig-paren">)</span> &#x2192; Tuple[src.backend.dbmanager.tdoa.CoordXYZ, src.backend.dbmanager.tdoa.CoordXYZ, Optional[src.backend.dbmanager.tdoa.CoordXYZ]]<a class="headerlink" href="#src.backend.dbmanager.tdoa.resolve_position_based_on_order_of_arrival" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple algorithm to resolve ambiguity of position candidates.</p>
+<p>Finds and sorts time of arrival and position for each station. Based on this order,
+and the distance to the candidates, a position candidate can be concluded in most
+cases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tstamps</strong> – Instance of dataclass Timestamps with attributes ‘sec_i’ and ‘msec_i’
+(where i = a, b, c)</p></li>
+<li><p><strong>station_data</strong> – Instance of dataclass StationData containing position of stations.</p></li>
+<li><p><strong>positions</strong> – Position candidates found thus far by TDOA hyperbola algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns a Tuple of the two position candidates, and the position chosen as a
+solution. If no candidate can be chosen, both candidates are returned and
+position solution is returned as None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.tdoa.tdoa_hyperbola_algorithm">
+<code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">tdoa_hyperbola_algorithm</code><span class="sig-paren">(</span><em class="sig-param">depth: float</em>, <em class="sig-param">tstamps: src.backend.dbmanager.tdoa.Timestamps</em>, <em class="sig-param">station_data: src.backend.dbmanager.tdoa.StationData</em><span class="sig-paren">)</span> &#x2192; src.backend.dbmanager.tdoa.CoordXYZ<a class="headerlink" href="#src.backend.dbmanager.tdoa.tdoa_hyperbola_algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates x-y-z coordinates based on station data, depth and timestamps.</p>
+<p>Calculates x-y-z coordinates with algorithm from Bertrand T. Fang’s 1989 paper,
+| –&gt; ‘Simple Solutions for Hyperbolic and Related Position Fixes’.
+Algorithm is a ‘Time Difference of Arrival’ (TDOA) technique for positoning, where 3
+stations (A, B, C) with known positions, are used to measure difference in times of
+arrival of signal, leading to a hyperbolic solution for position fix. In this case,
+providing a 2D solution, while the third dimension z is provided by depth argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>depth</strong> – Depth of signal, defining z-value of position [m units]</p></li>
+<li><p><strong>timestamps</strong> – Dataclass ‘Timestamps’ with member variables containing
+second and millisecond time arrival of signal in station A, B and C.</p></li>
+<li><p><strong>station_data</strong> – <p>Dataclass ‘StationData’ with member variables containing
+integer id, latitude/longitude position, depth, and x-y-z position
+for station A, B, and C [m units].</p>
+<p>XY position of A is always (0, 0)
+XY position of B is always (b, 0)
+XY position of C is always (cx, cy)</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An instance of dataclass ‘CoordXYZ’ with member variables x, y, and z.
+Coordinates describe 3D-position of signal in relation to coordinate
+system defined by station data. The position is returned in unit cm.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.backend.dbmanager.tdoa.verify_position_within_sea_cage">
+<code class="sig-prename descclassname">src.backend.dbmanager.tdoa.</code><code class="sig-name descname">verify_position_within_sea_cage</code><span class="sig-paren">(</span><em class="sig-param">P0: src.backend.dbmanager.tdoa.CoordXYZ, P1: src.backend.dbmanager.tdoa.CoordXYZ, position: Optional[src.backend.dbmanager.tdoa.CoordXYZ], cageCircle: src.backend.dbmanager.tdoa.Circle, rThresh: float = 1.1</em><span class="sig-paren">)</span> &#x2192; Optional[src.backend.dbmanager.tdoa.CoordXYZ]<a class="headerlink" href="#src.backend.dbmanager.tdoa.verify_position_within_sea_cage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple function that checks if position candidate is within cage cirumreference.</p>
+<p>Checks whether solution (position != None), or candidates (position = None), are
+within cage cirumreference based on distance from cage center. If both canidates
+are within the cage, choose the one closest to the center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>P0</strong> – XYZ-point candidate 0.</p></li>
+<li><p><strong>P1</strong> – XYZ-point candidate 1.</p></li>
+<li><p><strong>position</strong> – XYZ-point chosen solution (None if none is chosen so far)</p></li>
+<li><p><strong>cageCircle</strong> – Instance of dataclass Circle. Has attributes ‘radius’ and ‘center’.</p></li>
+<li><p><strong>rThresh</strong> – How much more than the cage radius are we accepting (default=1.1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If a valid position is chosen, that position is returned (CoordXYZ).
+If not, None is returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="frontend.html" class="btn btn-neutral float-right" title="Frontend documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quick_setup.html" class="btn btn-neutral float-left" title="Setup for new iof projects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Per Arne Kjelsvik
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

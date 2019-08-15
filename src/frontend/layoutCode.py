@@ -38,8 +38,7 @@ def app_page_layout(
                     html.A(
                         id="gh-link",
                         children=["View on GitHub"],
-                        href="http://github.com/perkjelsvik/internetoffish/"
-                        "blob/master/src/frontend/app_{}.py".format(app_name),
+                        href="http://github.com/perkjelsvik/iof/",
                         style={
                             "color": "white" if light_logo else "black",
                             "border": "solid 1px white"

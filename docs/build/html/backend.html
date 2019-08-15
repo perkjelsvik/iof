@@ -1,68 +1,221 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>Backend &#8212; iof 1.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Backend documentation &mdash; iof 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Frontend" href="frontend.html" />
-    <link rel="prev" title="Information" href="information.html" />
+    <link rel="next" title="Frontend documentation" href="frontend.html" />
+    <link rel="prev" title="Setup for new iof projects" href="quick_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> iof
+          
+
+          
+          </a>
+
+          
             
-  <div class="section" id="backend">
-<h1>Backend<a class="headerlink" href="#backend" title="Permalink to this headline">¶</a></h1>
-<p>Here is the documentation for Backend code. If everything is configured corretly,
-starting up is as simple as running</p>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="information.html">Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_setup.html">Setup for new <code class="code docutils literal notranslate"><span class="pre">iof</span></code> projects</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Backend documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#top-level-modules">Top-level modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.main">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.mqttclient">mqttclient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.initbackend">initbackend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#message-handling">Message handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.conversion">conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.msghandler">msghandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.packet">packet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.protocol">protocol</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#databasemanager">Databasemanager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbformat">dbformat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbinit">dbinit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbmanager">dbmanager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgbackup">msgbackup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgconversion">msgconversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.positioning">positioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.tdoa">tdoa</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">Frontend documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">iof</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Backend documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/backend.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="backend-documentation">
+<h1>Backend documentation<a class="headerlink" href="#backend-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Here is the documentation for Backend code. The documentation is not complete, and is
+automatically generated using the <code class="code docutils literal notranslate"><span class="pre">sphinx</span></code> python package, meaning there can be
+weird formatting in places, since not all documentation is strictly adhering to a specfic
+documentation style. To run backend after doing first time  initialization, you simply run
+(from root folder) the below command</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span>
 </pre></div>
 </div>
 <p>This will spawn an instance of <code class="code docutils literal notranslate"><span class="pre">src.backend.mqttclient</span></code> using the configurations
 of the project.</p>
-<p>For first time start-up:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span> <span class="o">-</span><span class="n">i</span>
-<span class="n">Please</span> <span class="nb">input</span> <span class="n">ip</span><span class="o">-</span><span class="n">address</span><span class="p">:</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span>
-<span class="ow">and</span> <span class="n">port</span> <span class="n">number</span><span class="p">:</span> <span class="mi">8883</span>
-<span class="n">username</span><span class="p">:</span> <span class="n">mqttuser</span>
-<span class="n">Password</span><span class="p">:</span> <span class="n">mqttpassword</span>
+<p>For first time initialization, you want to place a <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code> file in the root
+location that is configured according to the attached <code class="code docutils literal notranslate"><span class="pre">metadata_example.xlsx</span></code>. Once
+that is in place, you can initalize backend as so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python -m src.backend.main -i
+[...] Do you wish to convert metadata from an excel (xlsx) file? [y/n]: y
+Please input ip-address: 127.0.0.1
+and port number: 1883
+username: mqttuser
+Password: mqttpassword
 </pre></div>
 </div>
-<p>You will be prompted to fill in <code class="code docutils literal notranslate"><span class="pre">mqtt</span></code> broker information. By default, it will
-set the main database name to <code class="code docutils literal notranslate"><span class="pre">iof.db</span></code> and backup database to
-<code class="code docutils literal notranslate"><span class="pre">backupDB.db</span></code> inside <code class="code docutils literal notranslate"><span class="pre">src/backend/dbmanager/databases/</span></code>. You can run
-<code class="code docutils literal notranslate"><span class="pre">main.py</span></code> with argument <code class="code docutils literal notranslate"><span class="pre">-db</span></code> and then provide one argument to name
-main database something else, two arguments to name both main and backup database
-something else</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">db</span> <span class="s2">&quot;mainDatabaseName&quot;</span> <span class="s2">&quot;backupDatabaseName&quot;</span>
+<p>You will be prompted to fill in <code class="code docutils literal notranslate"><span class="pre">mqtt</span></code> broker information. After the information has
+been filled out <code class="code docutils literal notranslate"><span class="pre">src.backend.main</span></code> will attempt to spawn <code class="code docutils literal notranslate"><span class="pre">src.backend.mqttclient</span></code>
+as a subprocess. Whenever it crashes it will attempt to respawn the process. That means that
+if the mqqt-client is unable to connect to the broker, it will keep respawning the client.
+If this is the case, kill the process, and then run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">backend.src.main</span></code> again
+with the <code class="code docutils literal notranslate"><span class="pre">-i</span></code> flag, or both the <code class="code docutils literal notranslate"><span class="pre">-i</span></code> and <code class="code docutils literal notranslate"><span class="pre">-r</span></code> flag. You will be
+prompted to fill out the MQTT broker configuration again. Alternatively, you can edit the
+MQTT configuration directly inside <code class="code docutils literal notranslate"><span class="pre">src/backend/.config/config.toml</span></code>.</p>
+<p>To see all arguments that <code class="code docutils literal notranslate"><span class="pre">src.backend.main</span></code> supports, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span> <span class="o">-</span><span class="n">h</span>
 </pre></div>
 </div>
-<p>You can also reset <code class="code docutils literal notranslate"><span class="pre">backend</span></code> with the <code class="code docutils literal notranslate"><span class="pre">-r</span></code> flag. To see all arguments,
-run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">src.backend.main</span> <span class="pre">-h</span></code>.</p>
-<p>Make sure to include a <code class="code docutils literal notranslate"><span class="pre">metadata.toml</span></code> file inside <code class="code docutils literal notranslate"><span class="pre">src/backend/.config/</span></code>
-correctly formatted to have backend running correctly. When initing, it will
-automatically build other metadata-files correctly.</p>
+<p>Again, make sure to have an excel file in the root location that is named <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code>.
+Otherwise, the init cannot convert the project metadata to its own internal metadata files.
+Without them, frontend cannot work, and features of backend will not work either, such as raw
+data conversion and positioning.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/backend_flow.png"><img alt="Backend MQTT client logic flow" src="_images/backend_flow.png" style="width: 100%;" /></a>
+</div>
 <div class="section" id="top-level-modules">
 <h2>Top-level modules<a class="headerlink" href="#top-level-modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-src.backend.main">
@@ -791,98 +944,52 @@ If not, None is returned.</p>
 </div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">iof</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="information.html">Information</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Backend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#top-level-modules">Top-level modules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.main">main</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.mqttclient">mqttclient</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.initbackend">initbackend</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#message-handling">Message handling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.conversion">conversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.msghandler">msghandler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.packet">packet</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.msghandler.protocol">protocol</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#databasemanager">Databasemanager</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbformat">dbformat</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbinit">dbinit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.dbmanager">dbmanager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgbackup">msgbackup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.msgconversion">msgconversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.positioning">positioning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.backend.dbmanager.tdoa">tdoa</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="frontend.html">Frontend</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="information.html" title="previous chapter">Information</a></li>
-      <li>Next: <a href="frontend.html" title="next chapter">Frontend</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="frontend.html" class="btn btn-neutral float-right" title="Frontend documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quick_setup.html" class="btn btn-neutral float-left" title="Setup for new iof projects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Per Arne Kjelsvik
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Per Arne Kjelsvik.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/backend.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
     
-  </body>
+   
+
+</body>
 </html>

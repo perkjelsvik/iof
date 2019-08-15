@@ -1,8 +1,11 @@
-Backend
-=======
+Backend documentation
+=====================
 
-Here is the documentation for Backend code. If everything is configured corretly,
-starting up is as simple as running
+Here is the documentation for Backend code. The documentation is not complete, and is 
+automatically generated using the :code:`sphinx` python package, meaning there can be 
+weird formatting in places, since not all documentation is strictly adhering to a specfic
+documentation style. To run backend after doing first time  initialization, you simply run
+(from root folder) the below command
 
 .. code-block::
 
@@ -11,33 +14,44 @@ starting up is as simple as running
 This will spawn an instance of :code:`src.backend.mqttclient` using the configurations
 of the project.
 
-For first time start-up:
+For first time initialization, you want to place a :code:`metadata.xlsx` file in the root
+location that is configured according to the attached :code:`metadata_example.xlsx`. Once
+that is in place, you can initalize backend as so:
 
 .. code-block::
 
    python -m src.backend.main -i
+   [...] Do you wish to convert metadata from an excel (xlsx) file? [y/n]: y
    Please input ip-address: 127.0.0.1
-   and port number: 8883
+   and port number: 1883
    username: mqttuser
    Password: mqttpassword
 
-You will be prompted to fill in :code:`mqtt` broker information. By default, it will
-set the main database name to :code:`iof.db` and backup database to
-:code:`backupDB.db` inside :code:`src/backend/dbmanager/databases/`. You can run
-:code:`main.py` with argument :code:`-db` and then provide one argument to name
-main database something else, two arguments to name both main and backup database
-something else
+You will be prompted to fill in :code:`mqtt` broker information. After the information has
+been filled out :code:`src.backend.main` will attempt to spawn :code:`src.backend.mqttclient`
+as a subprocess. Whenever it crashes it will attempt to respawn the process. That means that
+if the mqqt-client is unable to connect to the broker, it will keep respawning the client.
+If this is the case, kill the process, and then run :code:`python -m backend.src.main` again
+with the :code:`-i` flag, or both the :code:`-i` and :code:`-r` flag. You will be 
+prompted to fill out the MQTT broker configuration again. Alternatively, you can edit the 
+MQTT configuration directly inside :code:`src/backend/.config/config.toml`.
+
+To see all arguments that :code:`src.backend.main` supports, run 
 
 .. code-block::
+    
+    python -m src.backend.main -h
 
-   python -m src.backend.main -i -db "mainDatabaseName" "backupDatabaseName"
+Again, make sure to have an excel file in the root location that is named :code:`metadata.xlsx`.
+Otherwise, the init cannot convert the project metadata to its own internal metadata files.
+Without them, frontend cannot work, and features of backend will not work either, such as raw 
+data conversion and positioning. 
 
-You can also reset :code:`backend` with the :code:`-r` flag. To see all arguments,
-run :code:`python -m src.backend.main -h`.
+.. figure:: images/backend_flow.png
+    :width: 100%
+    :align: center
+    :alt: Backend MQTT client logic flow
 
-Make sure to include a :code:`metadata.toml` file inside :code:`src/backend/.config/`
-correctly formatted to have backend running correctly. When initing, it will
-automatically build other metadata-files correctly.
 
 Top-level modules
 -----------------

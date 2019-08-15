@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setup for new iof projects &mdash; iof 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backend documentation" href="backend.html" />
+    <link rel="prev" title="Information" href="information.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> iof
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="information.html">Information</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup for new <code class="code docutils literal notranslate"><span class="pre">iof</span></code> projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-setup">Quick setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-python-3-7">Installing Python 3.7</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows-10">Windows 10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linux-ubuntu">Linux Ubuntu</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-iof-repository">Downloading <code class="code docutils literal notranslate"><span class="pre">iof</span></code> repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-repository-dependencies">Installing repository dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filling-out-metadata-xlsx">Filling out <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initalizing-backend">Initalizing backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initializing-frontend">Initializing frontend</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="backend.html">Backend documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">Frontend documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">iof</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Setup for new <code class="code docutils literal notranslate"><span class="pre">iof</span></code> projects</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quick_setup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="setup-for-new-iof-projects">
+<h1>Setup for new <code class="code docutils literal notranslate"><span class="pre">iof</span></code> projects<a class="headerlink" href="#setup-for-new-iof-projects" title="Permalink to this headline">¶</a></h1>
+<p>In this page you will find detailed information on how to setup <code class="code docutils literal notranslate"><span class="pre">iof</span></code>
+for a new project. First a quick setup outlining the steps. In the sections
+below, more detailed instructions for the individual steps are given.</p>
+<div class="section" id="quick-setup">
+<h2>Quick setup<a class="headerlink" href="#quick-setup" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Download the code from <a class="reference external" href="https://github.com/perkjelsvik/iof">https://github.com/perkjelsvik/iof</a></p></li>
+<li><p>Create a virtual environment inside repository and install project packages</p></li>
+<li><p>Fill out your project metadata and save it to a file <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code> in root location of repository code</p></li>
+<li><p>Run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">src.backend.main</span> <span class="pre">-i</span></code></p></li>
+<li><p>Answer <code class="code docutils literal notranslate"><span class="pre">y</span></code> to convert excel metadata and fill in MQTT broker information</p></li>
+<li><p>Keep backend running or <code class="code docutils literal notranslate"><span class="pre">Ctrl+C</span></code> to kill it.</p></li>
+<li><p>Navigate to <code class="code docutils literal notranslate"><span class="pre">src/frontend</span></code> and run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">initfrontend.py</span></code></p></li>
+<li><p>Fill in at least one username/password pair for Dash app authentication</p></li>
+<li><p>Run <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">iof_app.py</span></code> to start project Dash app</p></li>
+<li><p>If there is data in the main database inside backend, go to <code class="code docutils literal notranslate"><span class="pre">http://127.0.0.1:8050</span></code> to explore the app</p></li>
+</ol>
+</div>
+<div class="section" id="installing-python-3-7">
+<h2>Installing Python 3.7<a class="headerlink" href="#installing-python-3-7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="windows-10">
+<h3>Windows 10<a class="headerlink" href="#windows-10" title="Permalink to this headline">¶</a></h3>
+<p>The latest release of Python can be downloaded from <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a>.
+The currently most recent python version is <code class="code docutils literal notranslate"><span class="pre">3.7.4</span></code>. If you are on windows,
+download for example the executable installer and use that to install. It is
+recommended to add to PATH and to also allow the installer to extend the PATH length
+limit of the system. For the following commands, it is assumed you are using the
+<code class="code docutils literal notranslate"><span class="pre">cmd.exe</span></code> terminal. You can of course use other terminals too, but for this
+guide, the commands provided are valid for <code class="code docutils literal notranslate"><span class="pre">cmd.exe</span></code>. Translate to your own
+terminal as appropiate.</p>
+<p>Open <code class="code docutils literal notranslate"><span class="pre">cmd.exe</span></code> and verify your Python version by entering <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-v</span></code>.
+It should read out the version you installed. If not, there might be issues with
+python on PATH. Typically it is due to multiple python installations on the same
+machine so that it does not know which version to point too. There are several guides
+on how to fix these issues if you google a bit.</p>
+<p>Alternatively, you could install the Windows 10 Linux Subsystem <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">https://docs.microsoft.com/en-us/windows/wsl/install-win10</a></p>
+</div>
+<div class="section" id="linux-ubuntu">
+<h3>Linux Ubuntu<a class="headerlink" href="#linux-ubuntu" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">venv</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="downloading-iof-repository">
+<h2>Downloading <code class="code docutils literal notranslate"><span class="pre">iof</span></code> repository<a class="headerlink" href="#downloading-iof-repository" title="Permalink to this headline">¶</a></h2>
+<p>Clone / download the repository code from <a class="reference external" href="https://github.com/iof">https://github.com/iof</a>.
+Here is the direct download link for the latest version <a class="reference external" href="https://github.com/PerKjelsvik/iof/archive/master.zip">https://github.com/PerKjelsvik/iof/archive/master.zip</a>.
+Unzip it in your desired location.</p>
+<p>If you have git installed in your terminal, you can clone it to your desired location directly like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">perkjelsvik</span><span class="o">/</span><span class="n">iof</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-repository-dependencies">
+<h2>Installing repository dependencies<a class="headerlink" href="#installing-repository-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>You should use a virtual environment. Any will work, but the recommended to use is the
+built-in <code class="code docutils literal notranslate"><span class="pre">venv</span></code> <a class="reference external" href="https://docs.python.org/3/library/venv.html">https://docs.python.org/3/library/venv.html</a>. Inside the repository
+you have downloaded, run from terminal</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">windows</span><span class="p">:</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
+<span class="n">ubuntu</span><span class="p">:</span> <span class="n">python3</span><span class="o">.</span><span class="mi">7</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
+</pre></div>
+</div>
+<p>This will create a <code class="code docutils literal notranslate"><span class="pre">venv</span></code> folder in root of the repository. You need to activate this
+environment everytime to run iof. To activate:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">windows</span><span class="p">:</span> <span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span>
+<span class="n">linux</span><span class="p">:</span> <span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span> <span class="n">OR</span> <span class="o">.</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+</pre></div>
+</div>
+<p>You should now se <code class="code docutils literal notranslate"><span class="pre">(venv)</span></code> to the left in your terminal. This indicates that the environment
+is activated. To deactivate enter <code class="code docutils literal notranslate"><span class="pre">deactivate</span></code>. Keep the enviornment activated. Next is to
+install code dependencies. When using <code class="code docutils literal notranslate"><span class="pre">python</span></code> in terminal it will now point to the python3.7
+version of the virtual environment, and the packages installed within. All the following commands
+should work on both windows and linux. Begin by upgrading <code class="code docutils literal notranslate"><span class="pre">pip</span></code> and then install the packages
+used by the repository</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements_dev</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>You are now ready to initalize your project.</p>
+</div>
+<div class="section" id="filling-out-metadata-xlsx">
+<h2>Filling out <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code><a class="headerlink" href="#filling-out-metadata-xlsx" title="Permalink to this headline">¶</a></h2>
+<p>To position tags, convert raw data, and for the frontend Dash app to work, you need metadata.
+In the repository there is a file, <code class="code docutils literal notranslate"><span class="pre">metadata_example.xlsx</span></code>, that you can use as a reference.
+The file is also available here: <a class="reference external" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vT5kx0npXn5d-5JLvW7uCfPEsXMts3d7dilHhqMWyXCn_6CNW_eRccCBxAkIZyq5bzEy-wUFNY3gZ3Y/pubhtml">https://docs.google.com/spreadsheets/d/e/2PACX-1vT5kx0npXn5d-5JLvW7uCfPEsXMts3d7dilHhqMWyXCn_6CNW_eRccCBxAkIZyq5bzEy-wUFNY3gZ3Y/pubhtml</a></p>
+<p>Inside the document there are instructions on how to fill the individual sheets. I recommmend
+duplicating the example file, and renaming the copy to <code class="code docutils literal notranslate"><span class="pre">metadata.xlsx</span></code>. The file must
+have that name for the code to recognize it later. When you modify the file, remember to remove
+the blue rows of each sheet, namely the row below the column names explaining what the column is.
+If not the code will most likely crash in attempts to read out information from this row.
+The about sheet can be changed freely.</p>
+</div>
+<div class="section" id="initalizing-backend">
+<h2>Initalizing backend<a class="headerlink" href="#initalizing-backend" title="Permalink to this headline">¶</a></h2>
+<p>From the root location of the repository, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">src</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">main</span> <span class="o">-</span><span class="n">i</span>
+</pre></div>
+</div>
+<p>Follow the prompts to initalize the backend. After filling in MQTT information, the
+program will spawn the iof backend as a subprocess and try to subscribe to broker. If
+there are no issues it will run forever. If it crashes, for example due to no connection
+to broker, it will attempt to respawn infinitely. Kill it with <code class="code docutils literal notranslate"><span class="pre">Ctrl+C</span></code>. Here
+is an example of the information you will fill:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[...] Do you wish to convert metadata from an excel (xlsx) file? [y/n]: y
+Please input ip-address: 127.0.0.1
+and port number: 1883
+username: mqttuser
+Password: mqttpassword
+</pre></div>
+</div>
+<p>If you for any reason kill the backend / it stops completely, and you don’t need to initalize
+it again, you can run the same <code class="code docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">src.backend.main</span></code> command with the <code class="code docutils literal notranslate"><span class="pre">-i</span></code>
+flag. If you do need to change it, run it again with the flag, potentially with the <code class="code docutils literal notranslate"><span class="pre">-r</span></code>
+flag to, if you need to reset completely. To see all avalable commands, use the <code class="code docutils literal notranslate"><span class="pre">-h</span></code> flag.</p>
+<p>Alternatively, you can navigate to <code class="code docutils literal notranslate"><span class="pre">src/backend/.config/</span></code> and modify the files stored there
+manually. <code class="code docutils literal notranslate"><span class="pre">metadata.toml</span></code> is the converted excel metadata, while <code class="code docutils literal notranslate"><span class="pre">config.toml</span></code> is the
+MQTT broker configuration. Additionally, there is <code class="code docutils literal notranslate"><span class="pre">db_names.toml</span></code>, <code class="code docutils literal notranslate"><span class="pre">topics.toml</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">metadata_conversion.toml</span></code>, and <code class="code docutils literal notranslate"><span class="pre">metadata_positioning.toml</span></code>.</p>
+</div>
+<div class="section" id="initializing-frontend">
+<h2>Initializing frontend<a class="headerlink" href="#initializing-frontend" title="Permalink to this headline">¶</a></h2>
+<p>Due to the way the Dash app is structured, the code must be run from
+inside the <code class="code docutils literal notranslate"><span class="pre">src/frontend/</span></code> folder. Navigate there, and for first-time
+setup, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">initfrontend</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This will only work if backend has already been correctly initalized. If so,
+the metadata for the current project will be converted to a frontend-compatible
+file. It will then prompt you to add at least one username/password pair:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python initfrontend.py
+Done converting backend metadata to frontend metadata
+At least one username/password pair is needed for authentication.
+It will be stored next to the dash app in a toml file in plain text.
+username: dev
+password: pass
+Do you wish to add another username/password pair? [y/n]: n
+Successfully added username/password pair(s) to file! can now authenticate in Dash app.
+</pre></div>
+</div>
+<p>You are now ready to run the Dah app. To run, simply run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">iof_app</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>and then go visit <a class="reference external" href="https://127.0.0.1:8050">https://127.0.0.1:8050</a> in your web browser. This should load the
+iof Dash app, polling data from the main database located in <code class="code docutils literal notranslate"><span class="pre">src/backend/dbmanager/databases/</span></code>,
+and using metadata to provide filtering options in the app. Use the username/password combination
+you provided in the initalization.</p>
+<p>The app is essentially a Flask app. Look up how to host Flask apps on webservers / other solutions for
+ways to make the app publicly available. The code you would have to change is the very last line of code
+in <code class="code docutils literal notranslate"><span class="pre">iof_app.py</span></code>.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/webpage.png"><img alt="Dash iof web app" src="_images/webpage.png" style="width: 100%;" /></a>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="backend.html" class="btn btn-neutral float-right" title="Backend documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="information.html" class="btn btn-neutral float-left" title="Information" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Per Arne Kjelsvik
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
