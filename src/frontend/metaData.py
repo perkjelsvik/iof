@@ -28,11 +28,11 @@ class Cage:
     linesDepths: List[int]
     circlesDepths: List[int]
     name: str
-    linesSamples: int = 300
+    linesSamples: int = 60
     tbr: pd.DataFrame = None
     lines: List[pd.DataFrame] = field(default_factory=list)
     circles: List[List[pd.DataFrame]] = field(default_factory=list)
-    circlesSamples: int = 500
+    circlesSamples: int = 60
     traces: List[go.Scatter3d] = field(default_factory=list)
 
     def __post_init__(self):
@@ -98,7 +98,7 @@ class Cage:
                 y=self.tbr[self.tbr["TBR"] == id]["y"],
                 z=self.tbr[self.tbr["TBR"] == id]["z"],
                 mode="markers",
-                marker=dict(size=8, opacity=1, color="red"),
+                marker=dict(size=10, opacity=1, color="red"),
                 name=f"TBR {id}",
                 legendgroup=f"{self.name} TBRs",
             )

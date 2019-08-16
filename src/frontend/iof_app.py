@@ -30,10 +30,10 @@ metafile = "frontend_metadata.toml"
 meta = toml.load(metafile)
 project_timestamp_start = int(
     dt.timestamp(dt.strptime(meta["date_range"]["Project_start"], datetime_format))
-    )
+)
 project_timestamp_end = int(
     dt.timestamp(dt.strptime(meta["date_range"]["Project_end"], datetime_format))
-    )
+)
 VALID_USERNAME_PASSWORD_PAIR = toml.load("usrpwd.toml")
 app = dash.Dash(__name__)
 auth = dash_auth.BasicAuth(app, VALID_USERNAME_PASSWORD_PAIR)
@@ -46,8 +46,7 @@ dbName = ""
 # if db_names.toml doesn't exist: create it. If exists, load dbDict from it.
 if not Path(dbConfig).exists():
     print(
-        "Did not find toml config file for db_names - "
-        "cannot run dash app, exiting."
+        "Did not find toml config file for db_names - " "cannot run dash app, exiting."
     )
     exit()
 else:
@@ -96,34 +95,36 @@ timeseries_xaxis_dict = dict(
 )
 
 
-def db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices, includeTimestamp=False):
+def db_sql_query_and_columns(
+    table, timeRange, axisSelections, filterChoices, includeTimestamp=False
+):
     # Column selection
     if table == "tag" or table == "positions":
-        columns = 'tag_id, '
-        columnList = ["tag_id",]
+        columns = "tag_id, "
+        columnList = ["tag_id"]
     else:
         columns = "tbr_serial_id, "
-        columnList = ["tbr_serial_id",]
+        columnList = ["tbr_serial_id"]
     if "date" not in axisSelections:
         columns += "date, "
     if includeTimestamp:
         columns += "timestamp, "
     for column in axisSelections:
-        columns += f'{column}, '
+        columns += f"{column}, "
         columnList.append(column)
     columns = columns[:-2]
 
     # Filtering of data
-    filters = ''
+    filters = ""
     for column, values in filterChoices["IN"].items():
-        if len(values)==1:
+        if len(values) == 1:
             filters += f"{column} = {values[0]} AND "
         else:
             filters += f"{column} IN {values} AND "
     for column, valueRange in filterChoices["BETWEEN"].items():
         filters += f"{column} BETWEEN {valueRange[0]} AND {valueRange[1]} AND "
     filters = filters[:-5]
-    
+
     # Ordering of data
     order = "timestamp ASC"
 
@@ -151,8 +152,8 @@ def clean_df(df, columns):
 
     # Duplicate 'date' column, cast original as 'datetime', and set this as index
     df = df.rename(columns={"date": "datetime"})
-    df["date"]= df["datetime"]  # duplicate date column while string
-    df["datetime"]= df["datetime"].astype("datetime64")
+    df["date"] = df["datetime"]  # duplicate date column while string
+    df["datetime"] = df["datetime"].astype("datetime64")
     df = df.set_index("datetime")  # hour filtering requires datetime64 as index
 
     # Optimize dataframe memory usage
@@ -163,12 +164,14 @@ def clean_df(df, columns):
 
 
 def clean_data(table, timeRange, axisSelections, filterChoices, includeTimestamp=False):
-    if table=="pos":
+    if table == "pos":
         table = "positions"
 
     # create sql query
     print("Creating SQL query")
-    query, columns = db_sql_query_and_columns(table, timeRange, axisSelections, filterChoices, includeTimestamp)
+    query, columns = db_sql_query_and_columns(
+        table, timeRange, axisSelections, filterChoices, includeTimestamp
+    )
     # Read from databse
     print("Reading from database")
     con = sqlite3.connect(dbName)
@@ -194,12 +197,12 @@ def get_date_picker(type):
             ),
             dcc.DatePickerRange(
                 id=f"{type}-date-picker-range",
-                #start_date=dt.strftime(dt.today() - timedelta(days=30), date_format),
+                # start_date=dt.strftime(dt.today() - timedelta(days=30), date_format),
                 start_date="2019-03-10",
                 end_date="2019-05-11",
                 min_date_allowed="2018-11-06",
                 max_date_allowed="2019-05-11",
-                #max_date_allowed=dt.strftime(dt.today(), date_format),
+                # max_date_allowed=dt.strftime(dt.today(), date_format),
                 display_format="DD/MM/YYYY",
                 clearable=False,
                 first_day_of_week=1,
@@ -327,7 +330,9 @@ def get_tbr_dropdown(type):
             dcc.Dropdown(
                 id=f"{type}-tbr-dropdown",
                 value=meta["tbrs"]["all"],
-                options=[{"label": f"tbr {i}", "value": i} for i in meta["tbrs"]["all"]],
+                options=[
+                    {"label": f"tbr {i}", "value": i} for i in meta["tbrs"]["all"]
+                ],
                 multi=True,
             ),
         ],
@@ -366,7 +371,10 @@ def get_tag_frequency_dropdown(type):
             dcc.Dropdown(
                 id=f"{type}-tag-frequency-dropdown",
                 value=meta["tags"]["frequencies"]["frequencies"],
-                options=[{"label": f"{i}", "value": i} for i in meta["tags"]["frequencies"]["frequencies"]],
+                options=[
+                    {"label": f"{i}", "value": i}
+                    for i in meta["tags"]["frequencies"]["frequencies"]
+                ],
                 multi=True,
                 clearable=False,
             ),
@@ -385,7 +393,9 @@ def get_tag_dropdown(type):
             dcc.Dropdown(
                 id=f"{type}-tag-id-dropdown",
                 value=[10, 0],
-                options=[{"label": f"tag {i}", "value": i} for i in meta["tags"]["all"]],
+                options=[
+                    {"label": f"tag {i}", "value": i} for i in meta["tags"]["all"]
+                ],
                 multi=True,
                 clearable=False,
                 placeholder="Select at least one tag frequency first!",
@@ -393,23 +403,28 @@ def get_tag_dropdown(type):
         ],
     )
 
+
 def get_cage_3D_dropdown(type):
     return html.Div(
         id=f"{type}-cage-3D-dropdown-div",
         className="app-controls-block",
         children=[
             html.Div(
-                className="fullwidth-app-controls-name", children=["Select 3D cage render"]
+                className="fullwidth-app-controls-name",
+                children=["Select 3D cage render"],
             ),
             dcc.Dropdown(
                 id=f"{type}-cage-3D-dropdown",
                 value="all",
-                options=[{"label": f"{cage}", "value": cage} for cage in cages["cages"]],
+                options=[
+                    {"label": f"{cage}", "value": cage} for cage in cages["cages"]
+                ],
                 multi=False,
                 clearable=False,
-            )
-        ]
+            ),
+        ],
     )
+
 
 tag_filter_options = [
     # Date picker
@@ -574,10 +589,7 @@ tag_plot_options = [
 ]
 
 tbr_plot_options = list(tag_plot_options)
-all_plot_options = {
-    "tag": tag_plot_options,
-    "tbr": tbr_plot_options,
-    }
+all_plot_options = {"tag": tag_plot_options, "tbr": tbr_plot_options}
 
 
 tag_axis_options = [
@@ -667,7 +679,7 @@ def get_axis_div(type, axis, axisValue):
                 id=f"{type}-{axis}-axis-selection-dropdown",
                 value=axisValue,
                 clearable=False,
-            )
+            ),
         ],
     )
 
@@ -678,10 +690,13 @@ def get_axis_reversed_checklist_div(type):
         children=[
             dcc.Checklist(
                 id=f"{type}-axis-reversed-checklist",
-                options=[{"label": f"reversed {axis}-axis", "value": axis} for axis in ("x", "y", "z")],
+                options=[
+                    {"label": f"reversed {axis}-axis", "value": axis}
+                    for axis in ("x", "y", "z")
+                ],
                 value=["z"],
             )
-        ]
+        ],
     )
 
 
@@ -845,66 +860,36 @@ def get_submit_btn_div(type, style=hideDiv):
     )
 
 
-data_set_options = [
-    {"label": "tag","value": "tag",},
-    {"label": "tbr","value": "tbr",}]
+data_set_options = [{"label": "tag", "value": "tag"}, {"label": "tbr", "value": "tbr"}]
 tag_tab_plot_children = [
-        html.H4(
-            className="what-is",
-            children="Customize the plot",
-        ),
-        html.P(
-            "Select which type of plot and what x-axis "
-            "and y-axis you want. In addition, you can "
-            "also customize how the plot looks "
-            "(markers, lines, markers+lines etc.)"
-        ),
-        html.Hr(),
-        # Tag plot tab
-        html.Div(
-            id="tag-plot-tab",
-            children=tag_plot_controls,
-            style=showDiv,
-        ),
-        # Tbr plot tab
-        html.Div(
-            id="tbr-plot-tab",
-            children=tbr_plot_controls,
-            style=hideDiv,
-        ),
-        # Add empty div for callback to work
-        html.Div(
-            id="pos-plot-tab",
-            style=hideDiv,
-        ),
-    ]
-filter_tab_children = [
-    html.H4(
-        className="what-is",
-        children="Filter the data",
+    html.H4(className="what-is", children="Customize the plot"),
+    html.P(
+        "Select which type of plot and what x-axis "
+        "and y-axis you want. In addition, you can "
+        "also customize how the plot looks "
+        "(markers, lines, markers+lines etc.)"
     ),
+    html.Hr(),
+    # Tag plot tab
+    html.Div(id="tag-plot-tab", children=tag_plot_controls, style=showDiv),
+    # Tbr plot tab
+    html.Div(id="tbr-plot-tab", children=tbr_plot_controls, style=hideDiv),
+    # Add empty div for callback to work
+    html.Div(id="pos-plot-tab", style=hideDiv),
+]
+filter_tab_children = [
+    html.H4(className="what-is", children="Filter the data"),
     html.P(
         "Filter the data you want, i.e. select "
         "specific tag IDs, or TBRs, or cages etc."
     ),
     html.Hr(),
     # TAG filter options
-    html.Div(
-        id="tag-filter-tab",
-        children=tag_filter_options,
-        style=showDiv,
-    ),
+    html.Div(id="tag-filter-tab", children=tag_filter_options, style=showDiv),
     # TBR filter options
-    html.Div(
-        id="tbr-filter-tab",
-        children=tbr_filter_options,
-        style=hideDiv,
-    ),
+    html.Div(id="tbr-filter-tab", children=tbr_filter_options, style=hideDiv),
     # Add empty div for callback to work
-    html.Div(
-        id="pos-filter-tab",
-        style=hideDiv,
-    ),
+    html.Div(id="pos-filter-tab", style=hideDiv),
 ]
 
 
@@ -948,17 +933,17 @@ if includePositioning:
         {"label": "Frequency", "value": "frequency"},
     ]
 
-    axisLabels.update(dict(
-        x="X-position [m]",
-        y="Y-position [m]",
-        z="Depth [m]",
-        latitude="Latitude",
-        longitude="Longitude",
-    ))
+    axisLabels.update(
+        dict(
+            x="X-position [m]",
+            y="Y-position [m]",
+            z="Depth [m]",
+            latitude="Latitude",
+            longitude="Longitude",
+        )
+    )
 
-    plotLabels.update(dict(
-        scatter3d_animation="3D Position Animation"
-    ))
+    plotLabels.update(dict(scatter3d_animation="3D Position Animation"))
 
     pos_plot_controls = [
         html.P(
@@ -997,31 +982,18 @@ if includePositioning:
         html.Hr(),
     ]
 
-    data_set_options.append(
-        {
-        "label": "position",
-        "value": "pos",
-        }
-    )
+    data_set_options.append({"label": "position", "value": "pos"})
     # Remove empty div and replace with the one below
     del tag_tab_plot_children[-1]
     tag_tab_plot_children.append(
         # pos plot tab
-        html.Div(
-            id="pos-plot-tab",
-            children=pos_plot_controls,
-            style=hideDiv,
-        ),
+        html.Div(id="pos-plot-tab", children=pos_plot_controls, style=hideDiv)
     )
     # Remove empty div and replace with the one below
     del filter_tab_children[-1]
     filter_tab_children.append(
         # POS filter options
-        html.Div(
-            id="pos-filter-tab",
-            children=pos_filter_options,
-            style=hideDiv,
-        ),
+        html.Div(id="pos-filter-tab", children=pos_filter_options, style=hideDiv)
     )
 
 
@@ -1233,7 +1205,7 @@ def tag_dropdown_options(cage, dataType=None, frequencies=[]):
             freqTags += list(meta["tags"]["frequencies"].get(str(frequency), []))
     else:
         freqTags = meta["tags"]["all"]
-    
+
     # Find list of possible tags as intersection of choices
     tags = list(set(meta["tags"]["all"]).intersection(cageTags, dataTags, freqTags))
 
@@ -1332,7 +1304,10 @@ def set_tag_start_date(n_clicks):
         if int(dt.today().timestamp()) < project_timestamp_end:
             return dt.strftime(dt.today() - timedelta(days=30), date_format)
         else:
-            dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+            dt.strftime(
+                dt.fromtimestamp(project_timestamp_end) - timedelta(days=30),
+                date_format,
+            )
     return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
 
 
@@ -1415,7 +1390,10 @@ def set_tbr_start_date(n_clicks):
         if int(dt.today().timestamp()) < project_timestamp_end:
             return dt.strftime(dt.today() - timedelta(days=30), date_format)
         else:
-            dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+            dt.strftime(
+                dt.fromtimestamp(project_timestamp_end) - timedelta(days=30),
+                date_format,
+            )
     return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
 
 
@@ -1492,20 +1470,22 @@ if includePositioning:
             if int(dt.today().timestamp()) < project_timestamp_end:
                 return dt.strftime(dt.today() - timedelta(days=30), date_format)
             else:
-                dt.strftime(dt.fromtimestamp(project_timestamp_end) - timedelta(days=30), date_format)
+                dt.strftime(
+                    dt.fromtimestamp(project_timestamp_end) - timedelta(days=30),
+                    date_format,
+                )
         return dt.strftime(dt.fromtimestamp(project_timestamp_start), date_format)
-
 
     # END DATE BTN UPDATE
     @app.callback(
-        Output("pos-date-picker-range", "end_date"), [Input("pos-end-date-btn", "n_clicks")]
+        Output("pos-date-picker-range", "end_date"),
+        [Input("pos-end-date-btn", "n_clicks")],
     )
     def set_pos_end_date(n_clicks):
         if n_clicks is None:
             if int(dt.today().timestamp()) < project_timestamp_end:
                 return dt.strftime(dt.today(), date_format)
         return dt.strftime(dt.fromtimestamp(project_timestamp_end), date_format)
-
 
     # ENABLE/DISABLE TIME OF DAY FILTERING
     @app.callback(
@@ -1527,10 +1507,12 @@ if includePositioning:
             style = {"display": "none"}
         return style, 0, 0, 0, 23, 59, 59
 
-
     # TAG ID DROPDOWN
     @app.callback(
-        [Output("pos-tag-id-dropdown", "options"), Output("pos-tag-id-dropdown", "value")],
+        [
+            Output("pos-tag-id-dropdown", "options"),
+            Output("pos-tag-id-dropdown", "value"),
+        ],
         [
             Input("pos-cage-tag-dropdown", "value"),
             Input("pos-tag-frequency-dropdown", "value"),
@@ -1590,7 +1572,8 @@ def disable_enable_tbr_plot_options(plotType):
     return scat, box, mSize, mOpac, lWidth, lDash
 
 
-if includePositioning:  
+if includePositioning:
+
     @app.callback(
         [
             Output("pos-scatter-options-selection-dropdown", "disabled"),
@@ -1636,6 +1619,7 @@ def tbr_enable_timeseries(switch):
 
 
 if includePositioning:
+
     @app.callback(
         [Output("pos-x-axis-selection-dropdown", "disabled")],
         [Input("pos-enable-timeseries", "on")],
@@ -1704,6 +1688,7 @@ def update_tbr_plot_options(plotType, xAxis):
 
 
 if includePositioning:
+
     @app.callback(
         [
             Output("pos-x-axis-selection-dropdown", "options"),
@@ -1856,14 +1841,16 @@ def get_marker_line(markerSize, markerOpacity, lineWidth, lineDash):
     line = {"width": lineWidth, "dash": lineDash}
     return marker, line
 
+
 def get_axis_selections(plotType, xAxis, yAxis, zAxis):
     if plotType == "histogram":
-        axisSelections = (xAxis, )
+        axisSelections = (xAxis,)
     elif plotType == "scatter3d" or plotType == "scatter3d_animation":
         axisSelections = (xAxis, yAxis, zAxis)
     else:
         axisSelections = (xAxis, yAxis)
     return axisSelections
+
 
 # *------------------------------------------------*
 # | PLOTTING FIGURES CALLBACKS FOR TAG / TBR / POS |
@@ -1927,7 +1914,7 @@ def update_tag_graph(
     timeseries,
 ):
     table = "tag"
-    
+
     # Force x-axis to be 'date' if timeseries enabled
     if timeseries:
         xAxis = "date"
@@ -1947,24 +1934,17 @@ def update_tag_graph(
     axisSelections = get_axis_selections(plotType, xAxis, yAxis, zAxis)
 
     # Organize chosen filters / selections into dict
-    inFilters = {
-        "tbr_serial_id": tuple(tbrs),
-        "tag_id": tuple(tags),
-    }
-    betweenFilters = {
-        "timestamp": tuple(timeRange),
-        "snr": tuple(snr),
-    }
+    inFilters = {"tbr_serial_id": tuple(tbrs), "tag_id": tuple(tags)}
+    betweenFilters = {"timestamp": tuple(timeRange), "snr": tuple(snr)}
     filterChoices = {"IN": inFilters, "BETWEEN": betweenFilters}
 
-    
     # Read data from database and organize into ready-to-use dataframe
-    df = clean_data(table, timeRange, axisSelections, filterChoices) 
+    df = clean_data(table, timeRange, axisSelections, filterChoices)
     marker, line = get_marker_line(markerSize, markerOpacity, lineWidth, lineDash)
     start_time = get_time_of_day(start_hour, start_min, start_sec)
     end_time = get_time_of_day(end_hour, end_min, end_sec)
     dff = df.between_time(start_time, end_time)
-    #if xAxis != "millisecond" and yAxis != "millisecond":
+    # if xAxis != "millisecond" and yAxis != "millisecond":
     #    dff = dff.drop_duplicates(subset=["timestamp", "tag_id"], keep="first")
 
     # Get data and layout and make figure
@@ -2041,7 +2021,7 @@ def update_tbr_graph(
     timeseries,
 ):
     table = "tbr"
-    
+
     # Force x-axis to be 'date' if timeseries enabled
     if timeseries:
         xAxis = "date"
@@ -2059,20 +2039,17 @@ def update_tbr_graph(
     axisSelections = get_axis_selections(plotType, xAxis, yAxis, zAxis)
 
     # Organize chosen filters / selections into dict
-    inFilters = {
-        "tbr_serial_id": tuple(tbrs),
-    }
+    inFilters = {"tbr_serial_id": tuple(tbrs)}
     betweenFilters = {
         "timestamp": tuple(timeRange),
         "temperature": tuple(temp),
         "noise_avg": tuple(avg),
-        "noise_peak": tuple(peak)
+        "noise_peak": tuple(peak),
     }
     filterChoices = {"IN": inFilters, "BETWEEN": betweenFilters}
 
-    
     # Read data from database and organize into ready-to-use dataframe
-    df = clean_data(table, timeRange, axisSelections, filterChoices) 
+    df = clean_data(table, timeRange, axisSelections, filterChoices)
 
     marker, line = get_marker_line(markerSize, markerOpacity, lineWidth, lineDash)
     start_time = get_time_of_day(start_hour, start_min, start_sec)
@@ -2277,6 +2254,7 @@ def get_animation_fig(grids, tstamps, dates, tags, date, cage, markerSize):
 
 
 if includePositioning:
+
     @app.callback(
         Output("pos-confirm-3d-animation", "displayed"),
         [Input("pos-plot-type-selection-dropdown", "value")],
@@ -2285,7 +2263,6 @@ if includePositioning:
         if plotType == "scatter3d_animation":
             return True
         return False
-
 
     @app.callback(
         Output("pos-graph", "figure"),
@@ -2342,7 +2319,7 @@ if includePositioning:
         timeseries,
     ):
         table = "pos"
-        
+
         # Force x-axis to be 'date' if timeseries enabled
         if timeseries:
             xAxis = "date"
@@ -2360,15 +2337,15 @@ if includePositioning:
         axisSelections = get_axis_selections(plotType, xAxis, yAxis, zAxis)
 
         # Organize chosen filters / selections into dict
-        inFilters = {
-            "tag_id": tuple(tags),
-        }
+        inFilters = {"tag_id": tuple(tags)}
 
         filterChoices = {"IN": inFilters, "BETWEEN": {"timestamp": tuple(timeRange)}}
 
         # Read data from database and organize into ready-to-use dataframe
         if plotType == "scatter3d_animation":
-            df = clean_data(table, timeRange, axisSelections, filterChoices, includeTimestamp=True)
+            df = clean_data(
+                table, timeRange, axisSelections, filterChoices, includeTimestamp=True
+            )
         else:
             df = clean_data(table, timeRange, axisSelections, filterChoices)
 
@@ -2399,9 +2376,11 @@ if includePositioning:
             date = dt.strptime(start_date, date_format)
             times = dff["timestamp"].unique()
             dates = dff["date"].unique()
-            fig = get_animation_fig(data, times, dates, tags, date, cage, marker["size"])
+            fig = get_animation_fig(
+                data, times, dates, tags, date, cage, marker["size"]
+            )
         else:
-            fig = go.Figure({"data": data, "layout": layout})
+            fig = {"data": data, "layout": layout}
         return fig
 
 
